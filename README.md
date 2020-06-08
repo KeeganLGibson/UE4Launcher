@@ -1,2 +1,5 @@
-# UE4Launcher
-A Tool for Launching Ue4 Games
+## Project Requirements
+
+Visual Studio 2019
+*with the following components installed*
+    * .Net Development for Desktop
