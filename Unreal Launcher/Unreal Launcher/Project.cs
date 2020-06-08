@@ -139,7 +139,7 @@ namespace Unreal_Launcher
             {
                 string strMsg = "Unable to find an engine for " + ProjectName + ", the engine association may need to be refreshed. Right click on the .uProjectFile, \"Switch Unreal Engine Version...\"";
 
-                MessageBox.Show(strMsg, "Ceebzard Unreal Oopsie'd " + ProjectName);
+                MessageBox.Show(strMsg, "Oopsie'd " + ProjectName);
             }
         }
 
