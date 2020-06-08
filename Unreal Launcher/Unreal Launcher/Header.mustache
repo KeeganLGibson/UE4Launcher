@@ -1,0 +1,45 @@
+﻿{{#OneLineCopyright}}//	{{OneLineCopyright}}
+{{/OneLineCopyright}}//  {{ProjectName}}
+{{^OneLineCopyright}}//
+//  {{Year}}(c) - Copyright {{ProjectCompany}}{{/OneLineCopyright}}
+//
+//  File Name   :   {{FileName}}.cpp
+//  Description :   {{Description}}
+//
+
+#pragma once
+
+// Library Includes{{^bIsGameModule}}
+#include "{{ParentClassSource}}"{{/bIsGameModule}}
+
+// Local Includes{{#bIsGameModule}}
+#include "{{ParentClassSource}}"{{/bIsGameModule}}
+
+// This Includes{{#bIsUClass}}
+#include "{{FileName}}.generated.h"{{/bIsUClass}}
+
+// Types
+
+// Constants
+
+// Prototypes
+
+{{#bIsUClass}}UCLASS(){{/bIsUClass}}
+class {{Class}}{{#ParentClass}} : public {{ParentClass}}{{/ParentClass}}
+{
+	// Member Functions
+public:
+	{{Class}}();
+
+protected:
+
+private:
+
+	// Member Variables
+public:
+
+protected:
+
+private:
+
+};

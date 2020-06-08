@@ -1,0 +1,58 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:local="clr-namespace:Unreal_Launcher"
+        xmlns:Properties="clr-namespace:Unreal_Launcher.Properties" x:Class="Unreal_Launcher.NewClass"
+        mc:Ignorable="d"
+        Title="New Class" WindowStyle="ToolWindow" Width="662.433" Height="461.618">
+    <DockPanel Margin="5">
+        <DockPanel DockPanel.Dock="Bottom" LastChildFill="True" Margin="0">
+            <Button x:Name="btnCancel" Content="Cancel" Margin="0" Padding="5,1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="btnCancel_Click"/>
+            <Button x:Name="btnclear" Content="Clear" Margin="5,0,0,0" Padding="5,1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="btnclear_Click"/>
+            <Button x:Name="btnRescan" Content="Rescan Source Files..." Margin="5,0,0,0" Padding="5,1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="btnRescan_Click"/>
+            <Button x:Name="btnCreate" Margin="0" Padding="5,1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="btnCreate_Click">
+                <StackPanel Orientation="Horizontal" Width="Auto">
+                    <iconPacks:PackIconMaterial Kind="FileCode" />
+                    <TextBlock Text="Create" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+            </Button>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom">
+            <Separator Margin="0,5"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" LastChildFill="True" Margin="0" VerticalAlignment="Center">
+            <Label DockPanel.Dock="Left" Content="Path:" VerticalAlignment="Center"/>
+            <Button DockPanel.Dock="Right" x:Name="btnBrowseSourceLocation" Padding="5,1" VerticalAlignment="Center" Click="btnBrowseSourceLocation_Click">
+                <StackPanel Orientation="Horizontal" Width="Auto">
+                    <iconPacks:PackIconMaterial Kind="FolderOpen" />
+                    <TextBlock Text="Browse..." VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+            </Button>
+            <TextBox x:Name="txtSaveLocation" Text=".\Source\" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="43,0,5,0" MaxLines="1" AllowDrop="False"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" LastChildFill="True" Margin="0" VerticalAlignment="Center">
+            <Label Content="Description:" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtDescription" Text="" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,0,0,0" MaxLines="1" AllowDrop="False"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" LastChildFill="True" Margin="0" VerticalAlignment="Center">
+            <Label Content="Class Name:" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtclass" Text="" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,0,0,0" MaxLines="1" AllowDrop="False"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" LastChildFill="True" Margin="0" VerticalAlignment="Center">
+            <Label Content="Parent Class:" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtParent" Text="" VerticalAlignment="Center" Margin="3,0,0,0" MaxLines="1" AllowDrop="False"/>
+        </DockPanel>
+        <DockPanel LastChildFill="True">
+            <DockPanel LastChildFill="True" DockPanel.Dock="Top">
+                <Label DockPanel.Dock="Left" Content="Parent Class Search:" VerticalAlignment="Center" Margin="0"/>
+                <CheckBox x:Name="ckbAllClasses" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Checked="ckbAllClasses_Changed" Unchecked="ckbAllClasses_Changed" Margin="0,0,3,0"/>
+                <Label DockPanel.Dock="Right" Content="Show All:" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                <TextBox x:Name="txtParentSearch" Text="" VerticalAlignment="Center" Margin="3,0" MaxLines="1" AllowDrop="False" TextChanged="txtParentSearch_TextChanged"/>
+            </DockPanel>
+            <TreeView x:Name="tvParentClasses" Margin="0" SelectedItemChanged="tvParentClasses_SelectedItemChanged"/>
+        </DockPanel>
+    </DockPanel>
+</Window>
