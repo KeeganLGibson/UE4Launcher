@@ -27,7 +27,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>https://keeganlgibson.github.io/UE4Launcher/</InstallUrl>
+    <InstallUrl>http://127.0.0.1:8080/</InstallUrl>
+    <UpdateUrl>https://keeganlgibson.github.io/UE4Launcher/</UpdateUrl>
     <SupportUrl>https://keeganlgibson.github.io/UE4Launcher/index.html</SupportUrl>
     <TargetCulture>en-NZ</TargetCulture>
     <ProductName>UE4 Launcher</ProductName>
@@ -35,7 +36,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>4</ApplicationRevision>
+    <ApplicationRevision>24</ApplicationRevision>
     <ApplicationVersion>1.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -86,10 +87,10 @@
     <ApplicationIcon>Launcher.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>3652973816A29C65793542B68C495F8FB2C5F2E9</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>DA9DDDE30783ECB67A5C89D364E48D69735AB0AC</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Unreal Launcher_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>Ue4LauncherKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -104,7 +105,21 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Unreal Launcher_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>Ue4LauncherKey.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <TargetZone>Internet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -181,10 +196,12 @@
     <None Include="Cpp.mustache">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Ue4LauncherKey.pfx" />
     <None Include="Unreal Launcher_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -229,8 +246,5 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-  </Target>
-  <Target Name="AfterCompile" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe&quot; sign /f &quot;$(ProjectDir)\Unreal Launcher_TemporaryKey.pfx&quot; /p &quot;keegan13&quot; /v &quot;$(ProjectDir)obj\$(ConfigurationName)\$(TargetFileName)&quot;" />
   </Target>
 </Project>
