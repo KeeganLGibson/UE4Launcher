@@ -62,6 +62,7 @@ namespace Unreal_Launcher
 
         private void RescanSourceFiles(List<string> HeaderFiles, bool bGameModule)
         {
+            // class GAME_API {Group1} : public {Group2}
             Regex regex = new Regex(@"^(?!\s*\/\/*\s*)(?:\s*class\s*\w*\s+)([UAF]\w+)\s*(?:\s*:\s*public\s+)?([UAF]\w+)?(?:,\s+\w+\s+\w+)?$(?!;)");
 
             foreach (string HeaderFile in HeaderFiles)
