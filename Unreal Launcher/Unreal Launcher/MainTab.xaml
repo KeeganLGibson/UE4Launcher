@@ -65,6 +65,7 @@
         <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" Margin="5">
 
         </StackPanel>
+        <Image Source="/Launcher.ico" Grid.Column="3" Grid.Row="0" />
         <StackPanel Orientation="Vertical" Grid.Column="3" Grid.Row="1" Grid.RowSpan="3" Margin="5">
             <Button x:Name="btnNewClass" Margin="3
                         " Width="125" Click="btnNewClass_Click" Height="28" VerticalAlignment="Center">
