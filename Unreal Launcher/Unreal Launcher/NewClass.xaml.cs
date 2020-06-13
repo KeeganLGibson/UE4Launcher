@@ -318,6 +318,12 @@ namespace Unreal_Launcher
             data.Add("Year", DateTime.Now.Year.ToString());
             data.Add("Class", txtclass.Text);
             data.Add("ParentClass", txtParent.Text);
+            data.Add("ProjectCompany", Project.ProjectCompany);
+
+            if(!string.IsNullOrWhiteSpace(Project.Copyright))
+            {
+                data.Add("CustomCopyright", Project.Copyright);
+            }
 
             string Description = txtDescription.Text;
             data.Add("Description", string.IsNullOrWhiteSpace(Description) ? "TODO:" : Description);

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Unreal_Launcher
 {
     [Serializable]
-    public class ProjectSettings
+    public class ProjectLaunchSettings
     {
         public string LastSelectedMap;
         public bool bFullScreen = false;

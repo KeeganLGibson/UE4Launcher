@@ -34,7 +34,7 @@ namespace Unreal_Launcher
         [NonSerialized]
         private bool ProjectInitialised = false;
 
-        public ProjectSettings LaunchSettings = new ProjectSettings();
+        public ProjectLaunchSettings LaunchSettings = new ProjectLaunchSettings();
 
         public Project()
         {

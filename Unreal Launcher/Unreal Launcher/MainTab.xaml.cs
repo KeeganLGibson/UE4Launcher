@@ -82,11 +82,6 @@ namespace Unreal_Launcher
             Process.Start("explorer.exe", Project.ProjectDirectory);
         }
 
-        private void txtProjectNiceName_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            Project.ProjectNiceName = txtProjectNiceName.Text;
-        }
-
         private void btnKillAll_Click(object sender, System.Windows.RoutedEventArgs e)
         {
 
@@ -100,6 +95,12 @@ namespace Unreal_Launcher
         private void cbFullScreen_Changed(object sender, System.Windows.RoutedEventArgs e)
         {
             Project.LaunchSettings.bFullScreen = cbFullScreen.IsChecked ?? false;
+        }
+
+        private void btnProjectSettings_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ProjectSettings projectSettings = new ProjectSettings(Project);
+            projectSettings.ShowDialog();
         }
     }
 }
