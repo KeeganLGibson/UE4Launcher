@@ -13,12 +13,13 @@
             <Button x:Name="btnCancel" Content="Cancel" Margin="0" Padding="5,1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="btnCancel_Click"/>
             <Button x:Name="btnclear" Content="Clear" Margin="5,0,0,0" Padding="5,1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="btnclear_Click"/>
             <Button x:Name="btnRescan" Content="Rescan Source Files..." Margin="5,0,0,0" Padding="5,1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="btnRescan_Click"/>
-            <Button x:Name="btnCreate" Margin="0" Padding="5,1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="btnCreate_Click">
+            <Button x:Name="btnCreate" Margin="0" Padding="5,1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="btnCreate_Click" DockPanel.Dock="Right">
                 <StackPanel Orientation="Horizontal" Width="Auto">
                     <iconPacks:PackIconMaterial Kind="FileCode" />
                     <TextBlock Text="Create" VerticalAlignment="Center" Margin="10,0,0,0" />
                 </StackPanel>
             </Button>
+            <ProgressBar x:Name="prgbRescanProgress" Height="10" DockPanel.Dock="Right" Margin="5,0"/>
         </DockPanel>
         <DockPanel DockPanel.Dock="Bottom">
             <Separator Margin="0,5"/>

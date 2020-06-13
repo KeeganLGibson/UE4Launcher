@@ -30,7 +30,7 @@ namespace Unreal_Launcher
             CheckForUpdates();
         }
 
-        static async Task CheckForUpdates()
+        static async void CheckForUpdates()
         {
             // Check for Updates
             using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/KeeganLGibson/UE4Launcher"))

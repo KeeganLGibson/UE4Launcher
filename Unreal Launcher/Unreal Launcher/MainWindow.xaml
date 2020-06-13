@@ -6,7 +6,7 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:local="clr-namespace:Unreal_Launcher"
         mc:Ignorable="d"
-        Title="Unreal Project Launcher" Height="450" Width="800" Icon="Launcher.ico">
+        Title="Unreal Project Launcher" Height="500" Width="800" Icon="Launcher.ico">
     <TabControl x:Name="Tab_Control" SelectionChanged="Tab_Control_SelectionChanged" ItemsSource="{Binding}">
         <TabControl.Resources>
             <DataTemplate x:Key="TabHeader" DataType="TabItem">

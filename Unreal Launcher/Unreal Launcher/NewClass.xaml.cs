@@ -12,6 +12,8 @@ using Unreal_Launcher.Properties;
 using Stubble.Core.Builders;
 using Stubble.Core;
 using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace Unreal_Launcher
 {
@@ -24,6 +26,8 @@ namespace Unreal_Launcher
 
         ClassItem SourceRoot;
 
+        bool bScanRunning = false;
+
         public NewClass(Project ClassProject)
         {
             InitializeComponent();
@@ -31,22 +35,56 @@ namespace Unreal_Launcher
             Project = ClassProject;
 
             Title = "New Class : " + Project.ProjectNiceName;
+            ckbAllClasses.IsChecked = Settings.Default.bShowAllClasses;
+
+            LoadClassCache();
+        }
+
+        private async void LoadClassCache()
+        {
+            SetProgressBarVisibility(Visibility.Visible);
+
+            bScanRunning = true;
 
             if (!File.Exists(GetClassCache()))
             {
-                RescanAllSourceFiles();
+                await RescanAllSourceFiles();
             }
             else
             {
                 SourceRoot = BinarySerialization.ReadFromBinaryFile<ClassItem>(GetClassCache());
-                RescanGameSourceFiles(false);
+                await RescanGameSourceFiles(false);
             }
 
-            UpdateTreeVis();
+            ScanComplete();
+        }
 
-            ckbAllClasses.IsChecked = Settings.Default.bShowAllClasses;
+        private void SetProgressBarVisibility(Visibility visibility)
+        {
+            prgbRescanProgress.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
+            {
+                prgbRescanProgress.Visibility = visibility;
+            }));
+        }
 
+        private async void ForceRescan()
+        {
+            SetProgressBarVisibility(Visibility.Visible);
+
+            bScanRunning = true;
+
+            await RescanAllSourceFiles();
+            ScanComplete();
+        }
+
+        private void ScanComplete()
+        {
+            SetProgressBarVisibility(Visibility.Hidden);
+
+            RepopulateTreeVis();
             UpdateVisibleClasses();
+
+            bScanRunning = false;
         }
 
         private string GetClassCache()
@@ -54,7 +92,7 @@ namespace Unreal_Launcher
             return Project.ProjectDirectory + "/Saved/Tools/ClassCache.data";
         }
 
-        private void UpdateTreeVis()
+        private void RepopulateTreeVis()
         {
             tvParentClasses.Items.Clear();
             SourceRoot.PopulateItems(tvParentClasses.Items);
@@ -65,8 +103,14 @@ namespace Unreal_Launcher
             // class GAME_API {Group1} : public {Group2}
             Regex regex = new Regex(@"^(?!\s*\/\/*\s*)(?:\s*class\s*\w*\s+)([UAF]\w+)\s*(?:\s*:\s*public\s+)?([UAF]\w+)?(?:,\s+\w+\s+\w+)?$(?!;)");
 
-            foreach (string HeaderFile in HeaderFiles)
+            prgbRescanProgress.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
             {
+                prgbRescanProgress.Maximum = HeaderFiles.Count;
+            }));
+            
+            for (int i = 0; i < HeaderFiles.Count; ++i)
+            {
+                string HeaderFile = HeaderFiles[i];
                 using (StreamReader reader = new StreamReader(HeaderFile))
                 {
                     string line;
@@ -111,6 +155,11 @@ namespace Unreal_Launcher
                         }
                     }
                 }
+
+                prgbRescanProgress.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
+                {
+                    prgbRescanProgress.Value = i;
+                }));
             }
         }
 
@@ -124,7 +173,7 @@ namespace Unreal_Launcher
             }
         }
 
-        private void RescanGameSourceFiles(bool bPurge = true)
+        private async Task RescanGameSourceFiles(bool bPurge = true)
         {
             if (bPurge)
             {
@@ -139,10 +188,10 @@ namespace Unreal_Launcher
                 HeaderFiles.AddRange(Directory.GetFiles(Project.ProjectDirectory + "/Plugins/", "*.h", SearchOption.AllDirectories));
             }
 
-            RescanSourceFiles(HeaderFiles, true);
+            await Task.Run(() => RescanSourceFiles(HeaderFiles, true));
         }
 
-        private void RescanAllSourceFiles()
+        private async Task RescanAllSourceFiles()
         {
             SourceRoot = new ClassItem("root", "Source", false);
 
@@ -150,10 +199,10 @@ namespace Unreal_Launcher
             HeaderFiles.AddRange(Directory.GetFiles(Project.EnginePath + "/Engine/Source/", "*.h", SearchOption.AllDirectories));
             HeaderFiles.AddRange(Directory.GetFiles(Project.EnginePath + "/Engine/Plugins/", "*.h", SearchOption.AllDirectories));
 
-            RescanSourceFiles(HeaderFiles, false);
+            await Task.Run(() => RescanSourceFiles(HeaderFiles, false));
             BinarySerialization.WriteToBinaryFile<ClassItem>(GetClassCache(), SourceRoot);
 
-            RescanGameSourceFiles(false);
+            await RescanGameSourceFiles(false);
         }
 
         private void UpdateVisibleClasses()
@@ -206,9 +255,10 @@ namespace Unreal_Launcher
 
         private void btnRescan_Click(object sender, RoutedEventArgs e)
         {
-            RescanAllSourceFiles();
-            UpdateTreeVis();
-            UpdateVisibleClasses();
+            if (bScanRunning == false)
+            {
+                ForceRescan();
+            }
         }
 
         private void ClearForm()
@@ -232,7 +282,15 @@ namespace Unreal_Launcher
         private void tvParentClasses_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             TreeViewItem TreeItem = (TreeViewItem)e.NewValue;
-            txtParent.Text = TreeItem.Header.ToString();
+
+            if (TreeItem != null)
+            {
+                txtParent.Text = TreeItem.Header.ToString();
+            }
+            else
+            {
+                txtParent.Text = string.Empty;
+            }
         }
 
         private void txtParentSearch_TextChanged(object sender, TextChangedEventArgs e)
