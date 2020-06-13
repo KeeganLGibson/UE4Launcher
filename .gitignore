@@ -29,3 +29,6 @@
 project.lock.json
 project.assets.json
 *.user
+
+#Ignore staging directory for release builds
+[Rr]eleases/

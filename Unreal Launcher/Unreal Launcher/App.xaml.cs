@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Squirrel;
 using System.Windows;
+using Unreal_Launcher.Properties;
 
 namespace Unreal_Launcher
 {
@@ -17,6 +18,14 @@ namespace Unreal_Launcher
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            // Upgrade User Settings across versions.
+            if (Settings.Default.UpgradeRequired)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.UpgradeRequired = false;
+                Settings.Default.Save();
+            }
 
             CheckForUpdates();
         }
