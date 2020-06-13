@@ -21,12 +21,15 @@ namespace Unreal_Launcher
             CheckForUpdates();
         }
 
-        static async void CheckForUpdates()
+        static async Task CheckForUpdates()
         {
             // Check for Updates
             using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/KeeganLGibson/UE4Launcher"))
             {
-                await mgr.Result.UpdateApp();
+                using (var Result = await mgr)
+                {
+                    await Result.UpdateApp();
+                }
             }
         }
     }

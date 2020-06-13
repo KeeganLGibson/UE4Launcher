@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>UnrealProjectLauncher</id>
+	<!-- version will be replaced by MSBuild -->
+    <version>0.0.0</version>
+    <title>Unreal Project Launcher</title>
+    <authors>KeeganLGIbson</authors>
+    <owners></owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/KeeganLGibson/UE4Launcher/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/KeeganLGibson/UE4Launcher</projectUrl>
+    <iconUrl>https://keeganlgibson.github.io/UnrealProjectLauncher/UnrealProjectLauncher.ico</iconUrl>
+    <description>A launcher for Unreal Engine Projects</description>
+    <copyright>Keegan Gibson</copyright>
+    <language>en-NZ</language>
+  </metadata>
+  <files>
+    <file src="*.*" target="lib\net45\" exclude="*.pdb;*.nupkg;*.vshost.*"/>
+  </files>
+</package>
