@@ -1,441 +1,387 @@
-﻿using System.Windows;
-using System.IO;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
+﻿// Copyright (c) Keegan L Gibson. All rights reserved.
+
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using Microsoft.Win32;
-using static System.Environment;
-using System;
-using Unreal_Launcher.Properties;
-using Stubble.Core.Builders;
-using Stubble.Core;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Threading;
+using Stubble.Core;
+using Stubble.Core.Builders;
+using Unreal_Launcher.Properties;
+using static System.Environment;
 
 namespace Unreal_Launcher
 {
-    /// <summary>
-    /// Interaction logic for New_Class.xaml
-    /// </summary>
-    public partial class NewClass : Window
-    {
-        private Project Project;
-
-        ClassItem SourceRoot;
-
-        bool bScanRunning = false;
-
-        public NewClass(Project ClassProject)
-        {
-            InitializeComponent();
-
-            Project = ClassProject;
-
-            Title = "New Class : " + Project.ProjectNiceName;
-            ckbAllClasses.IsChecked = Settings.Default.bShowAllClasses;
-
-            LoadClassCache();
-        }
-
-        private async void LoadClassCache()
-        {
-            SetProgressBarVisibility(Visibility.Visible);
-
-            bScanRunning = true;
-
-            if (!File.Exists(GetClassCache()))
-            {
-                await RescanAllSourceFiles();
-            }
-            else
-            {
-                SourceRoot = BinarySerialization.ReadFromBinaryFile<ClassItem>(GetClassCache());
-                await RescanGameSourceFiles(false);
-            }
-
-            ScanComplete();
-        }
-
-        private void SetProgressBarVisibility(Visibility visibility)
-        {
-            prgbRescanProgress.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
-            {
-                prgbRescanProgress.Visibility = visibility;
-            }));
-        }
-
-        private async void ForceRescan()
-        {
-            SetProgressBarVisibility(Visibility.Visible);
-
-            bScanRunning = true;
-
-            await RescanAllSourceFiles();
-            ScanComplete();
-        }
-
-        private void ScanComplete()
-        {
-            SetProgressBarVisibility(Visibility.Hidden);
-
-            RepopulateTreeVis();
-            UpdateVisibleClasses();
-
-            bScanRunning = false;
-        }
-
-        private string GetClassCache()
-        {
-            return Project.ProjectDirectory + "/Saved/Tools/ClassCache.data";
-        }
-
-        private void RepopulateTreeVis()
-        {
-            tvParentClasses.Items.Clear();
-            SourceRoot.PopulateItems(tvParentClasses.Items);
-        }
-
-        private void RescanSourceFiles(List<string> HeaderFiles, bool bGameModule)
-        {
-            // class GAME_API {Group1} : public {Group2}
-            Regex regex = new Regex(@"^(?!\s*\/\/*\s*)(?:\s*class\s*\w*\s+)([UAF]\w+)\s*(?:\s*:\s*public\s+)?([UAF]\w+)?(?:,\s+\w+\s+\w+)?$(?!;)");
-
-            prgbRescanProgress.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
-            {
-                prgbRescanProgress.Maximum = HeaderFiles.Count;
-            }));
-            
-            for (int i = 0; i < HeaderFiles.Count; ++i)
-            {
-                string HeaderFile = HeaderFiles[i];
-                using (StreamReader reader = new StreamReader(HeaderFile))
-                {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        // Try to match each line against the Regex.
-                        Match match = regex.Match(line);
-                        if (match.Success)
-                        {
-                            // Write original line and the value.
-                            string CurrentClass = match.Groups[1].Value;
-                            string ParentClass = match.Groups[2].Value;
-
-                            ClassItem Parent = null;
-                            // Find the parent
-                            if (ParentClass != "")
-                            {
-                                Parent = SourceRoot.FindClassByName(ParentClass);
-                                if (Parent == null)
-                                {
-                                    // Create a Temporary Parent to Be Updated Later
-                                    Parent = new ClassItem(ParentClass, "", bGameModule, SourceRoot);
-                                }
-                            }
-                            else
-                            {
-                                Parent = SourceRoot;
-                            }
-
-                            // See if the class already exists and Update it.
-                            ClassItem Class = SourceRoot.FindClassByName(CurrentClass);
-
-                            if (Class != null)
-                            {
-                                Class.SetParent(Parent);
-                                Class.SourceFileLocation = HeaderFile;
-                            }
-                            else
-                            {
-                                Class = new ClassItem(CurrentClass, HeaderFile, bGameModule, Parent);
-                            }
-                        }
-                    }
-                }
-
-                prgbRescanProgress.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
-                {
-                    prgbRescanProgress.Value = i;
-                }));
-            }
-        }
-
-        void PurgeGameSourceFilesFromTree(ClassItem CurrentClass)
-        {
-            CurrentClass.SubClasses.RemoveAll(SubClass => SubClass.IsGameModule);
-
-            foreach(ClassItem SubClass in CurrentClass.SubClasses)
-            {
-                PurgeGameSourceFilesFromTree(SubClass);
-            }
-        }
-
-        private async Task RescanGameSourceFiles(bool bPurge = true)
-        {
-            if (bPurge)
-            {
-                PurgeGameSourceFilesFromTree(SourceRoot);
-            }
-
-            List<string> HeaderFiles = new List<string>();
-            HeaderFiles.AddRange(Directory.GetFiles(Project.ProjectDirectory + "/Source/", "*.h", SearchOption.AllDirectories));
-
-            if (Directory.Exists(Project.ProjectDirectory + "/Plugins/"))
-            {
-                HeaderFiles.AddRange(Directory.GetFiles(Project.ProjectDirectory + "/Plugins/", "*.h", SearchOption.AllDirectories));
-            }
-
-            await Task.Run(() => RescanSourceFiles(HeaderFiles, true));
-        }
-
-        private async Task RescanAllSourceFiles()
-        {
-            SourceRoot = new ClassItem("root", "Source", false);
-
-            List<string> HeaderFiles = new List<string>();
-            HeaderFiles.AddRange(Directory.GetFiles(Project.EnginePath + "/Engine/Source/", "*.h", SearchOption.AllDirectories));
-            HeaderFiles.AddRange(Directory.GetFiles(Project.EnginePath + "/Engine/Plugins/", "*.h", SearchOption.AllDirectories));
-
-            await Task.Run(() => RescanSourceFiles(HeaderFiles, false));
-            BinarySerialization.WriteToBinaryFile<ClassItem>(GetClassCache(), SourceRoot);
-
-            await RescanGameSourceFiles(false);
-        }
-
-        private void UpdateVisibleClasses()
-        {
-            FilterTreeView(tvParentClasses.Items, txtParentSearch.Text, (ckbAllClasses.IsChecked ?? false) ? new string[] { } : new[] { "UObject", "AActor", "AGameMode", "ACharacter", "APlayerController", "AGameState", "APlayerState"});
-        }
-
-        // Return true if the parent should be visible.
-        private (bool /*Visible*/, bool /*Expanded*/) FilterTreeView(ItemCollection Items, string Filter, string[] BaseClasses, bool bIsOfBaseClass = false)
-        {
-            bool bParentVisible = false;
-            bool bParentExpanded = false;
-
-            foreach (TreeViewItem TreeItem in Items)
-            {
-                bool bPassedFilter = string.IsNullOrWhiteSpace(Filter) || TreeItem.Header.ToString().Contains(Filter);
-                bool bIsOfClass = BaseClasses.Length == 0;
-
-                foreach (string Class in BaseClasses)
-                {
-                    if (TreeItem.Header.ToString() == Class)
-                    {
-                        bIsOfClass = true;
-                        break;
-                    }
-                }
-
-                (bool bChildRequestsVisible, bool bChildRequestsExpanded) = FilterTreeView(TreeItem.Items, Filter, BaseClasses, bIsOfClass || bIsOfBaseClass);
-
-                bParentExpanded |= bChildRequestsExpanded || (bPassedFilter && !string.IsNullOrWhiteSpace(Filter)) || (bIsOfClass && BaseClasses.Length != 0);
-
-                if (bChildRequestsVisible || (bPassedFilter && (bIsOfClass || bIsOfBaseClass)))
-                {
-                    TreeItem.Visibility = Visibility.Visible;
-                    TreeItem.IsExpanded = bChildRequestsExpanded;
-
-                    bParentVisible |= true;
-                }
-                else
-                {
-                    TreeItem.Visibility = Visibility.Collapsed;
-                    TreeItem.IsExpanded = false;
-
-                    bParentVisible |= false;
-                }
-            }
-
-            return (bParentVisible, bParentExpanded);
-        }
-
-        private void btnRescan_Click(object sender, RoutedEventArgs e)
-        {
-            if (bScanRunning == false)
-            {
-                ForceRescan();
-            }
-        }
-
-        private void ClearForm()
-        {
-            txtclass.Text = "";
-            txtParent.Text = "";
-        }
-
-        private void btnclear_Click(object sender, RoutedEventArgs e)
-        {
-            ClearForm();
-            txtSaveLocation.Text = @".\Source\";
-            txtParentSearch.Text = "";
-        }
-
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
-        private void tvParentClasses_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            TreeViewItem TreeItem = (TreeViewItem)e.NewValue;
-
-            if (TreeItem != null)
-            {
-                txtParent.Text = TreeItem.Header.ToString();
-            }
-            else
-            {
-                txtParent.Text = string.Empty;
-            }
-        }
-
-        private void txtParentSearch_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            UpdateVisibleClasses();
-        }
-
-        private static string EvaluateRelativePath(string mainDirPath, string absoluteFilePath)
-        {
-            string[] firstPathParts = mainDirPath.Trim(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar);
-            string[] secondPathParts = absoluteFilePath.Trim(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar);
-
-            int sameCounter = 0;
-            for (int i = 0; i < Math.Min(firstPathParts.Length, secondPathParts.Length); i++)
-            {
-                if (!firstPathParts[i].ToLower().Equals(secondPathParts[i].ToLower()))
-                {
-                    break;
-                }
-                sameCounter++;
-            }
-
-            if (sameCounter == 0)
-            {
-                return absoluteFilePath;
-            }
-
-            string newPath = String.Empty;
-            for (int i = sameCounter; i < firstPathParts.Length; i++)
-            {
-                if (i > sameCounter)
-                {
-                    newPath += Path.DirectorySeparatorChar;
-                }
-                newPath += "..";
-            }
-
-            if (newPath.Length == 0)
-            {
-                newPath = ".";
-            }
-
-            for (int i = sameCounter; i < secondPathParts.Length; i++)
-            {
-                newPath += Path.DirectorySeparatorChar;
-                newPath += secondPathParts[i];
-            }
-
-            return newPath;
-        }
-
-        private void btnBrowseSourceLocation_Click(object sender, RoutedEventArgs e)
-        {
-            FolderBrowserDialog FolderDialog = new FolderBrowserDialog
-            {
-                RootFolder = SpecialFolder.MyComputer,
-                ShowNewFolderButton = true,
-                SelectedPath = Project.ProjectDirectory + @"\Source\"
-            };
-
-            DialogResult DR = FolderDialog.ShowDialog();
-
-            if (DR == System.Windows.Forms.DialogResult.OK)
-            {
-                string RelPath = EvaluateRelativePath(Project.ProjectDirectory, FolderDialog.SelectedPath);
-                txtSaveLocation.Text = RelPath;
-            }
-        }
-
-        private void ckbAllClasses_Changed(object sender, RoutedEventArgs e)
-        {
-            Settings.Default.bShowAllClasses = ckbAllClasses.IsChecked ?? false;
-            Settings.Default.Save();
-
-            UpdateVisibleClasses();
-        }
-
-        private void btnCreate_Click(object sender, RoutedEventArgs e)
-        {
-            StubbleVisitorRenderer stubble = new StubbleBuilder().Build();
-
-            Dictionary<string, object> data = Project.GetData();
-            data.Add("Year", DateTime.Now.Year.ToString());
-            data.Add("Class", txtclass.Text);
-            data.Add("ParentClass", txtParent.Text);
-            data.Add("ProjectCompany", Project.ProjectCompany);
-
-            if(!string.IsNullOrWhiteSpace(Project.Copyright))
-            {
-                data.Add("CustomCopyright", Project.Copyright);
-            }
-
-            string Description = txtDescription.Text;
-            data.Add("Description", string.IsNullOrWhiteSpace(Description) ? "TODO:" : Description);
-
-            Regex regex = new Regex(@"^[AU][A-Z]");
-            bool bIsUClass = regex.IsMatch(txtParent.Text);
-            data.Add("bIsUClass", bIsUClass);
-
-            string FileName = bIsUClass ? txtclass.Text.Substring(1) : txtclass.Text;
-            data.Add("FileName", FileName);
-
-            TreeViewItem treeViewItem = (TreeViewItem)tvParentClasses.SelectedItem;
-            ClassItem ParentClass = (ClassItem)treeViewItem.Tag;
-
-            data.Add("bIsGameModule", ParentClass.IsGameModule);
-
-            string ClassAbsoluteSaveLocation = Path.Combine(Project.ProjectDirectory, txtSaveLocation.Text);
-
-            string ParentSourceFile = ParentClass.SourceFileLocation;
-            if (ParentClass.IsGameModule)
-            {
-                ParentSourceFile = EvaluateRelativePath(ClassAbsoluteSaveLocation, Path.GetDirectoryName(ParentClass.SourceFileLocation));
-            }
-            else
-            {
-                ParentSourceFile = EvaluateRelativePath(Path.Combine(Project.EnginePath, @"Engine\Source"), Path.GetDirectoryName(ParentClass.SourceFileLocation));
-            }
-
-            ParentSourceFile += Path.GetFileName(ParentClass.SourceFileLocation);
-
-            data.Add("ParentClassSource", ParentSourceFile);
-
-            string SvaeFolder = Path.Combine(Project.ProjectDirectory, txtSaveLocation.Text);
-
-            using (StreamReader streamReader = new StreamReader(@".\Header.mustache", Encoding.UTF8))
-            {
-                string output = stubble.Render(streamReader.ReadToEnd(), data);
-
-                using (StreamWriter streamWriter = new StreamWriter(Path.Combine(SvaeFolder, FileName + ".h")))
-                {
-                    streamWriter.Write(output);
-                }
-            }
-
-            using (StreamReader streamReader = new StreamReader(@".\Cpp.mustache", Encoding.UTF8))
-            {
-                string output = stubble.Render(streamReader.ReadToEnd(), data);
-                using (StreamWriter streamWriter = new StreamWriter(Path.Combine(SvaeFolder, FileName + ".cpp")))
-                {
-                    streamWriter.Write(output);
-                }
-            }
-
-            ClearForm();
-        }
-    }
+	/// <summary>
+	/// The code generation window and logic.
+	/// </summary>
+	public partial class NewClass : Window
+	{
+		private Project Project { get; }
+
+		private ClassItem SourceRoot { get; set; }
+
+		private bool _isScanRunning = false;
+
+		private bool IsScanRunning { get => _isScanRunning; set => _isScanRunning = value; }
+
+		public NewClass(Project project)
+		{
+			InitializeComponent();
+
+			Project = project;
+
+			Title = "New Class : " + Project.ProjectNiceName;
+			ckbAllClasses.IsChecked = Settings.Default.bShowAllClasses;
+
+			LoadClassCache();
+		}
+
+		private async void LoadClassCache()
+		{
+			SetProgressBarVisibility(Visibility.Visible);
+
+			IsScanRunning = true;
+
+			if (!File.Exists(GetClassCache()))
+			{
+				await RescanAllSourceFiles();
+			}
+			else
+			{
+				SourceRoot = BinarySerialization.ReadFromBinaryFile<ClassItem>(GetClassCache());
+				await RescanGameSourceFiles(false);
+			}
+
+			ScanComplete();
+		}
+
+		private void SetProgressBarVisibility(Visibility visibility)
+		{
+			prgbRescanProgress.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate()
+			{
+				prgbRescanProgress.Visibility = visibility;
+			}));
+		}
+
+		private async void ForceRescan()
+		{
+			SetProgressBarVisibility(Visibility.Visible);
+
+			IsScanRunning = true;
+
+			await RescanAllSourceFiles();
+			ScanComplete();
+		}
+
+		private void ScanComplete()
+		{
+			SetProgressBarVisibility(Visibility.Hidden);
+
+			RepopulateTreeVis();
+			UpdateVisibleClasses();
+
+			IsScanRunning = false;
+		}
+
+		private string GetClassCache()
+		{
+			return Project.ProjectDirectory + "/Saved/Tools/ClassCache.data";
+		}
+
+		private void RepopulateTreeVis()
+		{
+			tvParentClasses.Items.Clear();
+			SourceRoot.PopulateItems(tvParentClasses.Items);
+		}
+
+		private void RescanSourceFiles(List<string> headerFiles, bool isGameModule)
+		{
+			// class GAME_API {Group1} : public {Group2}
+			Regex regex = new Regex(@"^(?!\s*\/\/*\s*)(?:\s*class\s*\w*\s+)([UAF]\w+)\s*(?:\s*:\s*public\s+)?([UAF]\w+)?(?:,\s+\w+\s+\w+)?$(?!;)");
+
+			prgbRescanProgress.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate()
+			{
+				prgbRescanProgress.Maximum = headerFiles.Count;
+			}));
+
+			for (int i = 0; i < headerFiles.Count; ++i)
+			{
+				string headerFile = headerFiles[i];
+				using (StreamReader reader = new StreamReader(headerFile))
+				{
+					string line;
+					while ((line = reader.ReadLine()) != null)
+					{
+						// Try to match each line against the Regex.
+						Match match = regex.Match(line);
+						if (match.Success)
+						{
+							// Write original line and the value.
+							string currentClass = match.Groups[1].Value;
+							string parentClass = match.Groups[2].Value;
+
+							ClassItem parent = null;
+
+							// Find the parent
+							if (parentClass != string.Empty)
+							{
+								parent = SourceRoot.FindClassByName(parentClass);
+								if (parent == null)
+								{
+									// Create a Temporary Parent to Be Updated Later
+									parent = new ClassItem(parentClass, string.Empty, isGameModule, SourceRoot);
+								}
+							}
+							else
+							{
+								parent = SourceRoot;
+							}
+
+							// See if the class already exists and Update it.
+							ClassItem classItem = SourceRoot.FindClassByName(currentClass);
+
+							if (classItem != null)
+							{
+								classItem.Parent = parent;
+								classItem.SourceFileLocation = headerFile;
+							}
+							else
+							{
+								classItem = new ClassItem(currentClass, headerFile, isGameModule, parent);
+							}
+						}
+					}
+				}
+
+				prgbRescanProgress.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate()
+				{
+					prgbRescanProgress.Value = i;
+				}));
+			}
+		}
+
+		private void PurgeGameSourceFilesFromTree(ClassItem currentClass)
+		{
+			currentClass.SubClasses.RemoveAll(subClass => subClass.IsGameModule);
+
+			foreach (ClassItem subClass in currentClass.SubClasses)
+			{
+				PurgeGameSourceFilesFromTree(subClass);
+			}
+		}
+
+		private async Task RescanGameSourceFiles(bool performPurge = true)
+		{
+			if (performPurge)
+			{
+				PurgeGameSourceFilesFromTree(SourceRoot);
+			}
+
+			List<string> headerFiles = new List<string>();
+			headerFiles.AddRange(Directory.GetFiles(Project.ProjectDirectory + "/Source/", "*.h", SearchOption.AllDirectories));
+
+			if (Directory.Exists(Project.ProjectDirectory + "/Plugins/"))
+			{
+				headerFiles.AddRange(Directory.GetFiles(Project.ProjectDirectory + "/Plugins/", "*.h", SearchOption.AllDirectories));
+			}
+
+			await Task.Run(() => RescanSourceFiles(headerFiles, true));
+		}
+
+		private async Task RescanAllSourceFiles()
+		{
+			SourceRoot = new ClassItem("root", "Source", false);
+
+			List<string> headerFiles = new List<string>();
+			headerFiles.AddRange(Directory.GetFiles(Project.EnginePath + "/Engine/Source/", "*.h", SearchOption.AllDirectories));
+			headerFiles.AddRange(Directory.GetFiles(Project.EnginePath + "/Engine/Plugins/", "*.h", SearchOption.AllDirectories));
+
+			await Task.Run(() => RescanSourceFiles(headerFiles, false));
+			BinarySerialization.WriteToBinaryFile<ClassItem>(GetClassCache(), SourceRoot);
+
+			await RescanGameSourceFiles(false);
+		}
+
+		private void UpdateVisibleClasses()
+		{
+			FilterTreeView(tvParentClasses.Items, txtParentSearch.Text, (ckbAllClasses.IsChecked ?? false) ? new string[] { } : new[] { "UObject", "AActor", "AGameMode", "ACharacter", "APlayerController", "AGameState", "APlayerState" });
+		}
+
+		// Return true if the parent should be visible.
+		private (bool Visible, bool Expanded) FilterTreeView(ItemCollection items, string filter, string[] baseClasses, bool isOfBaseClass = false)
+		{
+			bool parentVisible = false;
+			bool parentExpanded = false;
+
+			foreach (TreeViewItem treeItem in items)
+			{
+				bool passedFilter = string.IsNullOrWhiteSpace(filter) || treeItem.Header.ToString().Contains(filter);
+				bool isDecendantOfClass = baseClasses.Length == 0;
+
+				foreach (string baseClass in baseClasses)
+				{
+					if (treeItem.Header.ToString() == baseClass)
+					{
+						isDecendantOfClass = true;
+						break;
+					}
+				}
+
+				(bool childRequestsVisible, bool childRequestsExpanded) = FilterTreeView(treeItem.Items, filter, baseClasses, isDecendantOfClass || isOfBaseClass);
+
+				parentExpanded |= childRequestsExpanded || (passedFilter && !string.IsNullOrWhiteSpace(filter)) || (isDecendantOfClass && baseClasses.Length != 0);
+
+				if (childRequestsVisible || (passedFilter && (isDecendantOfClass || isOfBaseClass)))
+				{
+					treeItem.Visibility = Visibility.Visible;
+					treeItem.IsExpanded = childRequestsExpanded;
+
+					parentVisible |= true;
+				}
+				else
+				{
+					treeItem.Visibility = Visibility.Collapsed;
+					treeItem.IsExpanded = false;
+
+					parentVisible |= false;
+				}
+			}
+
+			return (parentVisible, parentExpanded);
+		}
+
+		private void btnRescan_Click(object sender, RoutedEventArgs e)
+		{
+			if (IsScanRunning == false)
+			{
+				ForceRescan();
+			}
+		}
+
+		private void ClearForm()
+		{
+			txtclass.Text = string.Empty;
+			txtParent.Text = string.Empty;
+		}
+
+		private void btnclear_Click(object sender, RoutedEventArgs e)
+		{
+			ClearForm();
+			txtSaveLocation.Text = @".\Source\";
+			txtParentSearch.Text = string.Empty;
+		}
+
+		private void btnCancel_Click(object sender, RoutedEventArgs e)
+		{
+			Close();
+		}
+
+		private void tvParentClasses_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		{
+			TreeViewItem treeItem = (TreeViewItem)e.NewValue;
+
+			txtParent.Text = treeItem != null ? treeItem.Header.ToString() : string.Empty;
+		}
+
+		private void txtParentSearch_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			UpdateVisibleClasses();
+		}
+
+		private void btnBrowseSourceLocation_Click(object sender, RoutedEventArgs e)
+		{
+			FolderBrowserDialog folderDialog = new FolderBrowserDialog
+			{
+				RootFolder = SpecialFolder.MyComputer,
+				ShowNewFolderButton = true,
+				SelectedPath = Project.ProjectDirectory + @"\Source\",
+			};
+
+			DialogResult dialogResult = folderDialog.ShowDialog();
+
+			if (dialogResult == System.Windows.Forms.DialogResult.OK)
+			{
+				string relPath = PathHelpers.EvaluateRelativePath(Project.ProjectDirectory, folderDialog.SelectedPath);
+				txtSaveLocation.Text = relPath;
+			}
+		}
+
+		private void ckbAllClasses_Changed(object sender, RoutedEventArgs e)
+		{
+			Settings.Default.bShowAllClasses = ckbAllClasses.IsChecked ?? false;
+			Settings.Default.Save();
+
+			UpdateVisibleClasses();
+		}
+
+		private void btnCreate_Click(object sender, RoutedEventArgs e)
+		{
+			StubbleVisitorRenderer stubble = new StubbleBuilder().Build();
+
+			Dictionary<string, object> data = Project.GetData();
+			data.Add("Year", DateTime.Now.Year.ToString());
+			data.Add("Class", txtclass.Text);
+			data.Add("ParentClass", txtParent.Text);
+			data.Add("ProjectCompany", Project.ProjectCompany);
+
+			if (!string.IsNullOrWhiteSpace(Project.Copyright))
+			{
+				data.Add("CustomCopyright", Project.Copyright);
+			}
+
+			string description = txtDescription.Text;
+			data.Add("Description", string.IsNullOrWhiteSpace(description) ? "TODO:" : description);
+
+			Regex regex = new Regex(@"^[AU][A-Z]");
+			bool isUClass = regex.IsMatch(txtParent.Text);
+			data.Add("bIsUClass", isUClass);
+
+			string fileName = isUClass ? txtclass.Text.Substring(1) : txtclass.Text;
+			data.Add("FileName", fileName);
+
+			TreeViewItem treeViewItem = (TreeViewItem)tvParentClasses.SelectedItem;
+			ClassItem parentClass = (ClassItem)treeViewItem.Tag;
+
+			data.Add("bIsGameModule", parentClass.IsGameModule);
+
+			string classAbsoluteSaveLocation = Path.Combine(Project.ProjectDirectory, txtSaveLocation.Text);
+
+			string parentSourceFile = parentClass.IsGameModule
+				? PathHelpers.EvaluateRelativePath(classAbsoluteSaveLocation, Path.GetDirectoryName(parentClass.SourceFileLocation))
+				: PathHelpers.EvaluateRelativePath(Path.Combine(Project.EnginePath, @"Engine\Source"), Path.GetDirectoryName(parentClass.SourceFileLocation));
+
+			parentSourceFile += Path.GetFileName(parentClass.SourceFileLocation);
+
+			data.Add("ParentClassSource", parentSourceFile);
+
+			string svaeFolder = Path.Combine(Project.ProjectDirectory, txtSaveLocation.Text);
+
+			using (StreamReader streamReader = new StreamReader(@".\Header.mustache", Encoding.UTF8))
+			{
+				string output = stubble.Render(streamReader.ReadToEnd(), data);
+
+				using (StreamWriter streamWriter = new StreamWriter(Path.Combine(svaeFolder, fileName + ".h")))
+				{
+					streamWriter.Write(output);
+				}
+			}
+
+			using (StreamReader streamReader = new StreamReader(@".\Cpp.mustache", Encoding.UTF8))
+			{
+				string output = stubble.Render(streamReader.ReadToEnd(), data);
+				using (StreamWriter streamWriter = new StreamWriter(Path.Combine(svaeFolder, fileName + ".cpp")))
+				{
+					streamWriter.Write(output);
+				}
+			}
+
+			ClearForm();
+		}
+	}
 }

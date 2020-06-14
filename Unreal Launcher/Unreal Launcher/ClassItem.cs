@@ -1,87 +1,110 @@
-﻿using System;
+﻿// Copyright (c) Keegan L Gibson. All rights reserved.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace Unreal_Launcher
 {
-    [Serializable]
-    class ClassItem
-    {
-        public string ClassName;
-        public string SourceFileLocation;
+	[Serializable]
+	public class ClassItem
+	{
+		private ClassItem _parent;
 
-        public ClassItem Parent;
-        public List<ClassItem> SubClasses;
+		public ClassItem(string className, string sourceFileLocation, bool isGameModule, ClassItem parent = null)
+		{
+			ClassName = className;
+			SourceFileLocation = sourceFileLocation;
 
-        public bool IsGameModule;
+			SubClasses = new List<ClassItem>();
 
-        public ClassItem(string className, string sourceFileLocation, bool bIsGameModule, ClassItem parent = null)
-        {
-            ClassName = className;
-            SourceFileLocation = sourceFileLocation;
+			IsGameModule = isGameModule;
 
-            SubClasses = new List<ClassItem>();
+			Parent = parent;
+		}
 
-            IsGameModule = bIsGameModule;
+		public ClassItem Parent
+		{
+			get => _parent;
+			set
+			{
+				// Remove self from Old Parent
+				if (_parent != null)
+				{
+					_parent.SubClasses.Remove(this);
+				}
 
-            SetParent(parent);
-        }
+				_parent = value;
 
-        public void PopulateItems(ItemCollection TreeItemCollection)
-        {
-            foreach (ClassItem SubClass in SubClasses)
-            {
-                TreeViewItem SubClassItem = new TreeViewItem();
-                SubClassItem.Header = SubClass.ClassName;
-                SubClassItem.Tag = SubClass;
-                TreeItemCollection.Add(SubClassItem);
+				// Add Self to new parent
+				if (_parent != null)
+				{
+					_parent.SubClasses.Add(this);
+				}
+			}
+		}
 
-                SubClass.PopulateItems(SubClassItem.Items);
-            }
+		public string ClassName { get; set; }
 
-            TreeItemCollection.SortDescriptions.Add(new SortDescription("Header", ListSortDirection.Ascending));
-        }
+		public string SourceFileLocation { get; set; }
 
-        public void SetParent(ClassItem parent)
-        {
-            if (parent != null)
-            {
-                // Remove self from Old Parent
-                if (Parent != null)
-                {
-                    Parent.SubClasses.Remove(this);
-                }
+		public List<ClassItem> SubClasses { get; set; }
 
-                Parent = parent;
+		public bool IsGameModule { get; set; }
 
-                // Add Self to new parent
-                Parent.SubClasses.Add(this);
-            }
-        }
+		public void PopulateItems(ItemCollection treeItemCollection)
+		{
+			foreach (ClassItem subClass in SubClasses)
+			{
+				TreeViewItem subClassItem = new TreeViewItem
+				{
+					Header = subClass.ClassName,
+					Tag = subClass,
+				};
+				treeItemCollection.Add(subClassItem);
 
-        public ClassItem FindClassByName(string className)
-        {
-            if(ClassName == className)
-            {
-                return this;
-            }
+				subClass.PopulateItems(subClassItem.Items);
+			}
 
-            foreach (ClassItem SubClass in SubClasses)
-            {
-                ClassItem FoundItem = SubClass.FindClassByName(className);
+			treeItemCollection.SortDescriptions.Add(new SortDescription("Header", ListSortDirection.Ascending));
+		}
 
-                if(FoundItem != null)
-                {
-                    return FoundItem;
-                }
-            }
+		public void SetParent(ClassItem parent)
+		{
+			if (parent != null)
+			{
+				// Remove self from Old Parent
+				if (Parent != null)
+				{
+					Parent.SubClasses.Remove(this);
+				}
 
-            return null;
-        }
+				Parent = parent;
 
-    }
+				// Add Self to new parent
+				Parent.SubClasses.Add(this);
+			}
+		}
+
+		public ClassItem FindClassByName(string className)
+		{
+			if (ClassName == className)
+			{
+				return this;
+			}
+
+			foreach (ClassItem subClass in SubClasses)
+			{
+				ClassItem foundItem = subClass.FindClassByName(className);
+
+				if (foundItem != null)
+				{
+					return foundItem;
+				}
+			}
+
+			return null;
+		}
+	}
 }

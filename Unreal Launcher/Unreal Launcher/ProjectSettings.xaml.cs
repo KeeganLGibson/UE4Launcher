@@ -1,83 +1,67 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Copyright (c) Keegan L Gibson. All rights reserved.
+
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Unreal_Launcher
 {
-    /// <summary>
-    /// Interaction logic for ProjectSettings.xaml
-    /// </summary>
-    public partial class ProjectSettings : Window
-    {
-        Project project;
-        public ProjectSettings(Project Associatedproject)
-        {
-            InitializeComponent();
+	/// <summary>
+	/// Represents the project settings window.
+	/// </summary>
+	public partial class ProjectSettings : Window
+	{
+		private readonly Project _project;
 
-            project = Associatedproject;
+		public ProjectSettings(Project project)
+		{
+			InitializeComponent();
 
-            UpdateSettings();
-        }
+			_project = project;
 
-        private void UpdateSettings()
-        {
-            if (string.IsNullOrWhiteSpace(project.ProjectNiceName))
-            {
-                tbProjectNiceName.Text = project.ProjectName;
-            }
-            else
-            {
-                tbProjectNiceName.Text = project.ProjectNiceName;
-            }
+			UpdateSettings();
+		}
 
-            tbCompanyName.Text = project.ProjectCompany;
-            tbEnginePath.Text = project.EnginePath;
+		private void UpdateSettings()
+		{
+			tbProjectNiceName.Text = string.IsNullOrWhiteSpace(_project.ProjectNiceName) ? _project.ProjectName : _project.ProjectNiceName;
 
-            tbCustomCopyright.Text = project.Copyright;
-        }
+			tbCompanyName.Text = _project.ProjectCompany;
+			tbEnginePath.Text = _project.EnginePath;
 
-        private void ApplyNewSettings()
-        {
-            if(!string.IsNullOrWhiteSpace(tbProjectNiceName.Text))
-            {
-                project.ProjectNiceName = tbProjectNiceName.Text;
-            }
+			tbCustomCopyright.Text = _project.Copyright;
+		}
 
-            project.ProjectCompany = tbCompanyName.Text;
-            project.ProjectCompany = tbCustomCopyright.Text;
+		private void ApplyNewSettings()
+		{
+			if (!string.IsNullOrWhiteSpace(tbProjectNiceName.Text))
+			{
+				_project.ProjectNiceName = tbProjectNiceName.Text;
+			}
 
-            project.SaveProject();
-        }
+			_project.ProjectCompany = tbCompanyName.Text;
+			_project.ProjectCompany = tbCustomCopyright.Text;
 
-        private void CloseWindow()
-        {
-            Close();
-        }
+			_project.SaveProject();
+		}
 
-        private void btnOK_Click(object sender, RoutedEventArgs e)
-        {
-            ApplyNewSettings();
-            CloseWindow();
-        }
+		private void CloseWindow()
+		{
+			Close();
+		}
 
-        private void btnApply_Click(object sender, RoutedEventArgs e)
-        {
-            ApplyNewSettings();
-        }
+		private void btnOK_Click(object sender, RoutedEventArgs e)
+		{
+			ApplyNewSettings();
+			CloseWindow();
+		}
 
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
-        {
-            CloseWindow();
-        }
-    }
+		private void btnApply_Click(object sender, RoutedEventArgs e)
+		{
+			ApplyNewSettings();
+		}
+
+		private void btnCancel_Click(object sender, RoutedEventArgs e)
+		{
+			CloseWindow();
+		}
+	}
 }

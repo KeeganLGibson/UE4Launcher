@@ -1,209 +1,197 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Keegan L Gibson. All rights reserved.
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using System.IO;
-using System.Linq;
-using Unreal_Launcher.Properties;
 using Newtonsoft.Json;
+using Unreal_Launcher.Properties;
 
 namespace Unreal_Launcher
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-        private const string ProjectFileFilterType = "Project Files (*.uproject)|*.uproject";
-        private const string ProjectFileType = "*.uproject";
-        private readonly List<TabItem> TabItems;
-        private readonly TabItem TabAdd;
+	/// <summary>
+	/// The main application window.
+	/// </summary>
+	public partial class MainWindow : Window
+	{
+		private const string ProjectFileFilterType = "Project Files (*.uproject)|*.uproject";
+		private const string ProjectFileType = "*.uproject";
+		private readonly List<TabItem> tabItems;
+		private readonly TabItem tabAdd;
 
-        public MainWindow()
-        {
-            InitializeComponent();
+		public MainWindow()
+		{
+			InitializeComponent();
 
-            TabItems = new List<TabItem>();
-            TabAdd = new TabItem
-            {
-                Header = "+"
-            };
+			tabItems = new List<TabItem>();
+			tabAdd = new TabItem
+			{
+				Header = "+",
+			};
 
-            TabItems.Add(TabAdd);
-            Tab_Control.DataContext = TabItems;
-            Tab_Control.SelectedIndex = -1;
+			tabItems.Add(tabAdd);
+			Tab_Control.DataContext = tabItems;
+			Tab_Control.SelectedIndex = -1;
 
-            if (Settings.Default.Projects != null)
-            {
-                foreach (string projectstr in Settings.Default.Projects)
-                {
-                    Project project = JsonConvert.DeserializeObject<Project>(projectstr);
-                    if (project != null)
-                    {
-                        project.Init();
-                        AddProjectTab(project);
-                    }
-                }
-            }
-            else
-            {
-                Settings.Default.Projects = new System.Collections.Specialized.StringCollection();
+			if (Settings.Default.Projects != null)
+			{
+				foreach (string projectstr in Settings.Default.Projects)
+				{
+					Project project = JsonConvert.DeserializeObject<Project>(projectstr);
+					if (project != null)
+					{
+						project.Init();
+						AddProjectTab(project);
+					}
+				}
+			}
+			else
+			{
+				Settings.Default.Projects = new System.Collections.Specialized.StringCollection();
 
-                List<string> projectsFound = new List<string>();
-                projectsFound.AddRange(Directory.GetFiles(@".\", ProjectFileType, SearchOption.TopDirectoryOnly));
+				List<string> projectsFound = new List<string>();
+				projectsFound.AddRange(Directory.GetFiles(@".\", ProjectFileType, SearchOption.TopDirectoryOnly));
 
-                if(projectsFound.Count == 0)
-                {
-                    string[] projectDirectories = Directory.GetDirectories(@".\", "*", SearchOption.TopDirectoryOnly);
-                    foreach (string projectDirectory in projectDirectories)
-                    {
-                        projectsFound.AddRange(Directory.GetFiles(projectDirectory, ProjectFileType, SearchOption.TopDirectoryOnly));
-                    }
-                }
+				if (projectsFound.Count == 0)
+				{
+					string[] projectDirectories = Directory.GetDirectories(@".\", "*", SearchOption.TopDirectoryOnly);
+					foreach (string projectDirectory in projectDirectories)
+					{
+						projectsFound.AddRange(Directory.GetFiles(projectDirectory, ProjectFileType, SearchOption.TopDirectoryOnly));
+					}
+				}
 
-                List<string> SerialisedProject = new List<string>();
-                foreach (string projectFilename in projectsFound)
-                {
-                    Project project = new Project(projectFilename);
-                    SerialisedProject.Add(JsonConvert.SerializeObject(project));
-                    AddProjectTab(project);
-                }
+				List<string> serialisedProject = new List<string>();
+				foreach (string projectFilename in projectsFound)
+				{
+					Project project = new Project(projectFilename);
+					serialisedProject.Add(JsonConvert.SerializeObject(project));
+					AddProjectTab(project);
+				}
 
-                Settings.Default.Projects.AddRange(SerialisedProject.ToArray());
-                Settings.Default.Save();
-            }
-        }
+				Settings.Default.Projects.AddRange(serialisedProject.ToArray());
+				Settings.Default.Save();
+			}
+		}
 
-        private void AddProjectTab(Project project)
-        {
-            int count = TabItems.Count;
-            Tab_Control.DataContext = null;
+		private void AddProjectTab(Project project)
+		{
+			int count = tabItems.Count;
+			Tab_Control.DataContext = null;
 
-            string ProjectFileName = project.ProjectName;
+			string projectFileName = project.ProjectName;
 
-            // create new tab item
-            TabItem NewTab = new TabItem
-            {
-                Header = ProjectFileName,
-                Name = $"tab_{ProjectFileName}",
-                HeaderTemplate = Tab_Control.FindResource("TabHeader") as DataTemplate
-            };
+			// Create new tab item.
+			TabItem newTab = new TabItem
+			{
+				Header = projectFileName,
+				Name = $"tab_{projectFileName}",
+				HeaderTemplate = Tab_Control.FindResource("TabHeader") as DataTemplate,
+			};
 
-            NewTab.Content = new MainTab(project);
+			newTab.Content = new MainTab(project);
 
-            // insert tab item right before the last (+) tab item
-            TabItems.Insert(count - 1, NewTab);
+			// Insert tab item right before the last (+) tab item.
+			tabItems.Insert(count - 1, newTab);
 
-            Tab_Control.DataContext = TabItems;
-            // select newly added tab item
-            Tab_Control.SelectedItem = NewTab;
-        }
+			Tab_Control.DataContext = tabItems;
 
-        private void OpenNewProject()
-        {
-            OpenFileDialog ProjectDialog = new OpenFileDialog
-            {
-                Filter = ProjectFileFilterType
-            };
+			// Select newly added tab item.
+			Tab_Control.SelectedItem = newTab;
+		}
 
-            DialogResult DR = ProjectDialog.ShowDialog();
+		private void OpenNewProject()
+		{
+			OpenFileDialog projectDialog = new OpenFileDialog
+			{
+				Filter = ProjectFileFilterType,
+			};
 
-            if (DR == System.Windows.Forms.DialogResult.OK)
-            {
-                string Filename = ProjectDialog.FileName;
-                bool bFoundProject = DoesProjectAlreadyExist(Filename);
+			DialogResult result = projectDialog.ShowDialog();
 
-                if (!bFoundProject)
-                {
-                    Project project = new Project(Filename);
-                    Settings.Default.Projects.Add(JsonConvert.SerializeObject(project));
-                    Settings.Default.Save();
-                    AddProjectTab(project);
-                }
-            }
-        }
+			if (result == System.Windows.Forms.DialogResult.OK)
+			{
+				string filename = projectDialog.FileName;
+				bool foundProject = DoesProjectAlreadyExist(filename);
 
-        private bool DoesProjectAlreadyExist(string Filename)
-        {
-            bool bFoundProject = false;
+				if (!foundProject)
+				{
+					Project project = new Project(filename);
+					Settings.Default.Projects.Add(JsonConvert.SerializeObject(project));
+					Settings.Default.Save();
+					AddProjectTab(project);
+				}
+			}
+		}
 
-            for (int i = 0; i < Settings.Default.Projects.Count; ++i)
-            {
-                string EscapedFiledname = Filename.Replace("\\", "\\\\");
-                if (Settings.Default.Projects[i].Contains(EscapedFiledname))
-                {
-                    bFoundProject = true;
-                    break;
-                }
-            }
+		private bool DoesProjectAlreadyExist(string filename)
+		{
+			bool foundProject = false;
 
-            return bFoundProject;
-        }
+			for (int i = 0; i < Settings.Default.Projects.Count; ++i)
+			{
+				string escapedFiledname = filename.Replace("\\", "\\\\");
+				if (Settings.Default.Projects[i].Contains(escapedFiledname))
+				{
+					foundProject = true;
+					break;
+				}
+			}
 
-        private void Tab_Control_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            TabItem tab = Tab_Control.SelectedItem as TabItem;
+			return foundProject;
+		}
 
-            if (tab != null && tab.Header != null)
-            {
-                if (tab.Equals(TabAdd))
-                {
-                    OpenNewProject();
-                }
-            }
-        }
+		private void Tab_Control_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (Tab_Control.SelectedItem is TabItem tab && tab.Header != null)
+			{
+				if (tab.Equals(tabAdd))
+				{
+					OpenNewProject();
+				}
+			}
+		}
 
-        private void btnDelete_Click(object sender, RoutedEventArgs e)
-        {
-            string tabName = (sender as System.Windows.Controls.Button).CommandParameter.ToString();
+		private void btnDelete_Click(object sender, RoutedEventArgs e)
+		{
+			string tabName = (sender as System.Windows.Controls.Button).CommandParameter.ToString();
+			TabItem item = Tab_Control.Items.Cast<TabItem>().Where(i => i.Name.Equals(tabName)).FirstOrDefault() ?? throw new InvalidOperationException("Trying to remove a project tab that doest exist.");
 
-            TabItem item = Tab_Control.Items.Cast<TabItem>().Where(i => i.Name.Equals(tabName)).FirstOrDefault();
+			if (tabItems.Count > 1 && System.Windows.MessageBox.Show($"Are you sure you want to remove project '{item.Header}'?", "Remove Project", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+			{
+				MainTab tab = item.Content as MainTab;
 
-            if (item != null)
-            {
-                if (TabItems.Count > 1 && System.Windows.MessageBox.Show($"Are you sure you want to remove project '{item.Header}'?", "Remove Project", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                {
-                    // get selected tab
-                    TabItem selectedTab = Tab_Control.SelectedItem as TabItem;
+				for (int i = 0; i < Settings.Default.Projects.Count; ++i)
+				{
+					string escapedFiledname = tab.Project.ProjectFullPath.Replace("\\", "\\\\");
+					if (Settings.Default.Projects[i].Contains(escapedFiledname))
+					{
+						Settings.Default.Projects.RemoveAt(i);
+						break;
+					}
+				}
 
-                    MainTab tab = item.Content as MainTab;
+				Settings.Default.Save();
 
-                    for (int i = 0; i < Settings.Default.Projects.Count; ++i)
-                    {
-                        string EscapedFiledname = tab.Project.ProjectFullPath.Replace("\\", "\\\\");
-                        if (Settings.Default.Projects[i].Contains(EscapedFiledname))
-                        {
-                            Settings.Default.Projects.RemoveAt(i);
-                            break;
-                        }
-                    }
+				// clear tab control binding
+				Tab_Control.DataContext = null;
 
-                    Settings.Default.Save();
+				tabItems.Remove(item);
 
-                    // clear tab control binding
-                    Tab_Control.DataContext = null;
+				// bind tab control
+				Tab_Control.DataContext = tabItems;
 
-                    TabItems.Remove(item);
+				// select previously selected tab. if that is removed then select first tab
+				if (!(Tab_Control.SelectedItem is TabItem selectedTab) || selectedTab.Equals(item))
+				{
+					selectedTab = tabItems[0] != tabAdd ? tabItems[0] : null;
+				}
 
-                    // bind tab control
-                    Tab_Control.DataContext = TabItems;
-
-                    // select previously selected tab. if that is removed then select first tab
-                    if (selectedTab == null || selectedTab.Equals(item))
-                    {
-                        if (TabItems[0] != TabAdd)
-                        {
-                            selectedTab = TabItems[0];
-                        }
-                        else
-                        {
-                            selectedTab = null;
-                        }
-                    }
-                    Tab_Control.SelectedItem = selectedTab;
-                }
-            }
-
-        }
-    }
+				Tab_Control.SelectedItem = selectedTab;
+			}
+		}
+	}
 }

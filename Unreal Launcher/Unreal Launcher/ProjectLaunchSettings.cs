@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Copyright (c) Keegan L Gibson. All rights reserved.
+
+using System;
 
 namespace Unreal_Launcher
 {
-    [Serializable]
-    public class ProjectLaunchSettings
-    {
-        public string LastSelectedMap;
-        public bool bFullScreen = false;
-    }
+	[Serializable]
+	public class ProjectLaunchSettings
+	{
+		public string LastSelectedMap;
+		public bool FullScreen = false;
+	}
 }
