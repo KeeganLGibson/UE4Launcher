@@ -17,9 +17,9 @@ namespace Unreal_Launcher
 
 			Project = project;
 
-			txtProjectNiceName.Text = Project.ProjectNiceName;
-			lblProjectDir.Content = Project.ProjectDirectory;
-			cbFullScreen.IsChecked = Project.LaunchSettings.FullScreen;
+			TextBlock_ProjectNiceName.Text = Project.ProjectNiceName;
+			Label_ProjectDir.Content = Project.ProjectDirectory;
+			CheckBox_FullScreen.IsChecked = Project.LaunchSettings.FullScreen;
 
 			FindAllMaps();
 		}
@@ -31,27 +31,27 @@ namespace Unreal_Launcher
 			string[] files = Directory.GetFiles(Path.Combine(Project.ProjectDirectory, @".\Content\"), "*umap", SearchOption.AllDirectories);
 
 			// add a black default;
-			cmbMaps.Items.Add("(Default)");
+			ComboBox_Maps.Items.Add("(Default)");
 
 			foreach (string file in files)
 			{
 				if (!file.Contains("Marketplace") && !file.Contains("StarterContent"))
 				{
-					cmbMaps.Items.Add(Path.GetFileNameWithoutExtension(file));
+					ComboBox_Maps.Items.Add(Path.GetFileNameWithoutExtension(file));
 				}
 			}
 
 			// If no map selected use the project defaults.
-			cmbMaps.SelectedItem = string.IsNullOrWhiteSpace(Project.LaunchSettings.LastSelectedMap) ? "(Default)" : Project.LaunchSettings.LastSelectedMap;
+			ComboBox_Maps.SelectedItem = string.IsNullOrWhiteSpace(Project.LaunchSettings.LastSelectedMap) ? "(Default)" : Project.LaunchSettings.LastSelectedMap;
 		}
 
-		private void btnNewClass_Click(object sender, System.Windows.RoutedEventArgs e)
+		private void Button_NewClass_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			NewClass newClassWindow = new NewClass(Project);
 			newClassWindow.ShowDialog();
 		}
 
-		private void btnOpenEditor_Click(object sender, System.Windows.RoutedEventArgs e)
+		private void Button_OpenEditor_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			ProcessStartInfo startInfo = new ProcessStartInfo
 			{
@@ -62,7 +62,7 @@ namespace Unreal_Launcher
 			Process.Start(startInfo);
 		}
 
-		private void btnPlayGame_Click(object sender, System.Windows.RoutedEventArgs e)
+		private void Button_PlayGame_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			ProcessStartInfo startInfo = new ProcessStartInfo
 			{
@@ -73,28 +73,28 @@ namespace Unreal_Launcher
 			Process.Start(startInfo);
 		}
 
-		private void btnBrowseFolder_Click(object sender, System.Windows.RoutedEventArgs e)
+		private void Button_BrowseFolder_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			// opens explorer)
 			Process.Start("explorer.exe", Project.ProjectDirectory);
 		}
 
-		private void btnKillAll_Click(object sender, System.Windows.RoutedEventArgs e)
+		private void Button_KillAll_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			// TODO: Implement
 		}
 
-		private void cmbMaps_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void ComboBox_Maps_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			Project.LaunchSettings.LastSelectedMap = cmbMaps.SelectedItem.ToString();
+			Project.LaunchSettings.LastSelectedMap = ComboBox_Maps.SelectedItem.ToString();
 		}
 
-		private void cbFullScreen_Changed(object sender, System.Windows.RoutedEventArgs e)
+		private void CheckBox_FullScreen_Changed(object sender, System.Windows.RoutedEventArgs e)
 		{
-			Project.LaunchSettings.FullScreen = cbFullScreen.IsChecked ?? false;
+			Project.LaunchSettings.FullScreen = CheckBox_FullScreen.IsChecked ?? false;
 		}
 
-		private void btnProjectSettings_Click(object sender, System.Windows.RoutedEventArgs e)
+		private void Button_ProjectSettings_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			ProjectSettings projectSettings = new ProjectSettings(Project);
 			projectSettings.ShowDialog();

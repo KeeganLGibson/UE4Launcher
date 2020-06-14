@@ -28,22 +28,22 @@
                     <ColumnDefinition Width="283*"/>
                 </Grid.ColumnDefinitions>
                 <Label Content="Project Name:" ToolTip="Project Nice name use when generating code and in the launcher UI" VerticalAlignment="Center"/>
-                <TextBox x:Name="tbProjectNiceName" Grid.Column="1" ToolTip="Project Nice name use when generating code and in the launcher UI" VerticalAlignment="Center"/>
+                <TextBox x:Name="TextBox_ProjectNiceName" Grid.Column="1" ToolTip="Project Nice name use when generating code and in the launcher UI" VerticalAlignment="Center"/>
                 <Label Content="Company Name:" ToolTip="Compnay name use when generating code and in the launcher UI" Grid.Row="1" VerticalAlignment="Center"/>
-                <TextBox x:Name="tbCompanyName" Grid.Column="1" ToolTip="Compnay name use when generating code and in the launcher UI" Grid.Row="1" VerticalAlignment="Center"/>
+                <TextBox x:Name="TextBox_CompanyName" Grid.Column="1" ToolTip="Compnay name use when generating code and in the launcher UI" Grid.Row="1" VerticalAlignment="Center"/>
                 <Label Content="Engine Path:" ToolTip="EnginePath Override" Grid.Row="2" VerticalAlignment="Center"/>
-                <TextBlock x:Name="tbEnginePath" ToolTip="EnginePath Override" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"/>
+                <TextBlock x:Name="TextBox_EnginePath" ToolTip="EnginePath Override" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"/>
                 <Separator Grid.Row="3" Grid.ColumnSpan="2" VerticalAlignment="Center" />
                 <Label Content="Code Generation:" FontWeight="Bold" Grid.Row="4" Grid.ColumnSpan="2" VerticalAlignment="Center"/>
                 <Label Content="Custom Copyright Override:" Grid.Row="5" Grid.ColumnSpan="2" VerticalAlignment="Center"/>
-                <TextBox x:Name="tbCustomCopyright" Grid.Row="6" Grid.RowSpan="3" Grid.ColumnSpan="2" SpellCheck.IsEnabled="True" Width="383.333333333333" Height="74.6666666666668" />
+                <TextBox x:Name="TextBox_CustomCopyright" Grid.Row="6" Grid.RowSpan="3" Grid.ColumnSpan="2" SpellCheck.IsEnabled="True" Width="383.333333333333" Height="74.6666666666668" />
             </Grid>
             <Separator VerticalAlignment="Center"/>
         </StackPanel>
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0">
-            <Button x:Name="btnOK" Content="OK" Margin="5,5,0,0" Padding="5,1" Click="btnOK_Click" VerticalAlignment="Bottom"/>
-            <Button x:Name="btnApply" Content="Apply" Margin="5,5,0,0" Padding="5,1" Click="btnApply_Click" VerticalAlignment="Bottom"/>
-            <Button x:Name="btnCancel" Content="Cancel" Padding="5,1" Margin="5,5,0,0" Click="btnCancel_Click" VerticalAlignment="Bottom"/>
+            <Button x:Name="Button_OK" Content="OK" Margin="5,5,0,0" Padding="5,1" Click="Button_OK_Click" VerticalAlignment="Bottom"/>
+            <Button x:Name="Button_Apply" Content="Apply" Margin="5,5,0,0" Padding="5,1" Click="Button_Apply_Click" VerticalAlignment="Bottom"/>
+            <Button x:Name="Button_Cancel" Content="Cancel" Padding="5,1" Margin="5,5,0,0" Click="Button_Cancel_Click" VerticalAlignment="Bottom"/>
         </StackPanel>
         <Separator DockPanel.Dock="Bottom" VerticalAlignment="Bottom" />
     </DockPanel>

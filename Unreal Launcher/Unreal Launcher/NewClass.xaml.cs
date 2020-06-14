@@ -37,7 +37,7 @@ namespace Unreal_Launcher
 			Project = project;
 
 			Title = "New Class : " + Project.ProjectNiceName;
-			ckbAllClasses.IsChecked = Settings.Default.bShowAllClasses;
+			CheckBox_AllClasses.IsChecked = Settings.Default.bShowAllClasses;
 
 			LoadClassCache();
 		}
@@ -63,9 +63,9 @@ namespace Unreal_Launcher
 
 		private void SetProgressBarVisibility(Visibility visibility)
 		{
-			prgbRescanProgress.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate()
+			ProgressBar_Rescan.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate()
 			{
-				prgbRescanProgress.Visibility = visibility;
+				ProgressBar_Rescan.Visibility = visibility;
 			}));
 		}
 
@@ -96,8 +96,8 @@ namespace Unreal_Launcher
 
 		private void RepopulateTreeVis()
 		{
-			tvParentClasses.Items.Clear();
-			SourceRoot.PopulateItems(tvParentClasses.Items);
+			TreeView_ParentClasses.Items.Clear();
+			SourceRoot.PopulateItems(TreeView_ParentClasses.Items);
 		}
 
 		private void RescanSourceFiles(List<string> headerFiles, bool isGameModule)
@@ -105,9 +105,9 @@ namespace Unreal_Launcher
 			// class GAME_API {Group1} : public {Group2}
 			Regex regex = new Regex(@"^(?!\s*\/\/*\s*)(?:\s*class\s*\w*\s+)([UAF]\w+)\s*(?:\s*:\s*public\s+)?([UAF]\w+)?(?:,\s+\w+\s+\w+)?$(?!;)");
 
-			prgbRescanProgress.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate()
+			ProgressBar_Rescan.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate()
 			{
-				prgbRescanProgress.Maximum = headerFiles.Count;
+				ProgressBar_Rescan.Maximum = headerFiles.Count;
 			}));
 
 			for (int i = 0; i < headerFiles.Count; ++i)
@@ -159,9 +159,9 @@ namespace Unreal_Launcher
 					}
 				}
 
-				prgbRescanProgress.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate()
+				ProgressBar_Rescan.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate()
 				{
-					prgbRescanProgress.Value = i;
+					ProgressBar_Rescan.Value = i;
 				}));
 			}
 		}
@@ -210,7 +210,7 @@ namespace Unreal_Launcher
 
 		private void UpdateVisibleClasses()
 		{
-			FilterTreeView(tvParentClasses.Items, txtParentSearch.Text, (ckbAllClasses.IsChecked ?? false) ? new string[] { } : new[] { "UObject", "AActor", "AGameMode", "ACharacter", "APlayerController", "AGameState", "APlayerState" });
+			FilterTreeView(TreeView_ParentClasses.Items, TextBox_ParentSearch.Text, (CheckBox_AllClasses.IsChecked ?? false) ? new string[] { } : new[] { "UObject", "AActor", "AGameMode", "ACharacter", "APlayerController", "AGameState", "APlayerState" });
 		}
 
 		// Return true if the parent should be visible.
@@ -256,7 +256,7 @@ namespace Unreal_Launcher
 			return (parentVisible, parentExpanded);
 		}
 
-		private void btnRescan_Click(object sender, RoutedEventArgs e)
+		private void Button_Rescan_Click(object sender, RoutedEventArgs e)
 		{
 			if (IsScanRunning == false)
 			{
@@ -266,35 +266,35 @@ namespace Unreal_Launcher
 
 		private void ClearForm()
 		{
-			txtclass.Text = string.Empty;
-			txtParent.Text = string.Empty;
+			TextBox_Class.Text = string.Empty;
+			TextBox_Parent.Text = string.Empty;
 		}
 
-		private void btnclear_Click(object sender, RoutedEventArgs e)
+		private void Button_clear_Click(object sender, RoutedEventArgs e)
 		{
 			ClearForm();
-			txtSaveLocation.Text = @".\Source\";
-			txtParentSearch.Text = string.Empty;
+			TextBox_SaveLocation.Text = @".\Source\";
+			TextBox_ParentSearch.Text = string.Empty;
 		}
 
-		private void btnCancel_Click(object sender, RoutedEventArgs e)
+		private void Button_Cancel_Click(object sender, RoutedEventArgs e)
 		{
 			Close();
 		}
 
-		private void tvParentClasses_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		private void TreeView_ParentClasses_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
 		{
 			TreeViewItem treeItem = (TreeViewItem)e.NewValue;
 
-			txtParent.Text = treeItem != null ? treeItem.Header.ToString() : string.Empty;
+			TextBox_Parent.Text = treeItem != null ? treeItem.Header.ToString() : string.Empty;
 		}
 
-		private void txtParentSearch_TextChanged(object sender, TextChangedEventArgs e)
+		private void TextBox_ParentSearch_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			UpdateVisibleClasses();
 		}
 
-		private void btnBrowseSourceLocation_Click(object sender, RoutedEventArgs e)
+		private void Button_BrowseSourceLocation_Click(object sender, RoutedEventArgs e)
 		{
 			FolderBrowserDialog folderDialog = new FolderBrowserDialog
 			{
@@ -308,26 +308,26 @@ namespace Unreal_Launcher
 			if (dialogResult == System.Windows.Forms.DialogResult.OK)
 			{
 				string relPath = PathHelpers.EvaluateRelativePath(Project.ProjectDirectory, folderDialog.SelectedPath);
-				txtSaveLocation.Text = relPath;
+				TextBox_SaveLocation.Text = relPath;
 			}
 		}
 
-		private void ckbAllClasses_Changed(object sender, RoutedEventArgs e)
+		private void CheckBox_AllClasses_Changed(object sender, RoutedEventArgs e)
 		{
-			Settings.Default.bShowAllClasses = ckbAllClasses.IsChecked ?? false;
+			Settings.Default.bShowAllClasses = CheckBox_AllClasses.IsChecked ?? false;
 			Settings.Default.Save();
 
 			UpdateVisibleClasses();
 		}
 
-		private void btnCreate_Click(object sender, RoutedEventArgs e)
+		private void Button_Create_Click(object sender, RoutedEventArgs e)
 		{
 			StubbleVisitorRenderer stubble = new StubbleBuilder().Build();
 
 			Dictionary<string, object> data = Project.GetData();
 			data.Add("Year", DateTime.Now.Year.ToString());
-			data.Add("Class", txtclass.Text);
-			data.Add("ParentClass", txtParent.Text);
+			data.Add("Class", TextBox_Class.Text);
+			data.Add("ParentClass", TextBox_Parent.Text);
 			data.Add("ProjectCompany", Project.ProjectCompany);
 
 			if (!string.IsNullOrWhiteSpace(Project.Copyright))
@@ -335,22 +335,22 @@ namespace Unreal_Launcher
 				data.Add("CustomCopyright", Project.Copyright);
 			}
 
-			string description = txtDescription.Text;
+			string description = TextBox_Description.Text;
 			data.Add("Description", string.IsNullOrWhiteSpace(description) ? "TODO:" : description);
 
 			Regex regex = new Regex(@"^[AU][A-Z]");
-			bool isUClass = regex.IsMatch(txtParent.Text);
+			bool isUClass = regex.IsMatch(TextBox_Parent.Text);
 			data.Add("bIsUClass", isUClass);
 
-			string fileName = isUClass ? txtclass.Text.Substring(1) : txtclass.Text;
+			string fileName = isUClass ? TextBox_Class.Text.Substring(1) : TextBox_Class.Text;
 			data.Add("FileName", fileName);
 
-			TreeViewItem treeViewItem = (TreeViewItem)tvParentClasses.SelectedItem;
+			TreeViewItem treeViewItem = (TreeViewItem)TreeView_ParentClasses.SelectedItem;
 			ClassItem parentClass = (ClassItem)treeViewItem.Tag;
 
 			data.Add("bIsGameModule", parentClass.IsGameModule);
 
-			string classAbsoluteSaveLocation = Path.Combine(Project.ProjectDirectory, txtSaveLocation.Text);
+			string classAbsoluteSaveLocation = Path.Combine(Project.ProjectDirectory, TextBox_SaveLocation.Text);
 
 			string parentSourceFile = parentClass.IsGameModule
 				? PathHelpers.EvaluateRelativePath(classAbsoluteSaveLocation, Path.GetDirectoryName(parentClass.SourceFileLocation))
@@ -360,7 +360,7 @@ namespace Unreal_Launcher
 
 			data.Add("ParentClassSource", parentSourceFile);
 
-			string svaeFolder = Path.Combine(Project.ProjectDirectory, txtSaveLocation.Text);
+			string svaeFolder = Path.Combine(Project.ProjectDirectory, TextBox_SaveLocation.Text);
 
 			using (StreamReader streamReader = new StreamReader(@".\Header.mustache", Encoding.UTF8))
 			{

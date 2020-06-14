@@ -32,3 +32,5 @@ project.assets.json
 
 #Ignore staging directory for release builds
 [Rr]eleases/
+Unreal Launcher/Unreal Launcher/StyleCop.Cache
+*.Cache

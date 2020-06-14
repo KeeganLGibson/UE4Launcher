@@ -33,8 +33,8 @@ namespace Unreal_Launcher
 			};
 
 			tabItems.Add(tabAdd);
-			Tab_Control.DataContext = tabItems;
-			Tab_Control.SelectedIndex = -1;
+			TabControl_Projects.DataContext = tabItems;
+			TabControl_Projects.SelectedIndex = -1;
 
 			if (Settings.Default.Projects != null)
 			{
@@ -80,7 +80,7 @@ namespace Unreal_Launcher
 		private void AddProjectTab(Project project)
 		{
 			int count = tabItems.Count;
-			Tab_Control.DataContext = null;
+			TabControl_Projects.DataContext = null;
 
 			string projectFileName = project.ProjectName;
 
@@ -89,7 +89,7 @@ namespace Unreal_Launcher
 			{
 				Header = projectFileName,
 				Name = $"tab_{projectFileName}",
-				HeaderTemplate = Tab_Control.FindResource("TabHeader") as DataTemplate,
+				HeaderTemplate = TabControl_Projects.FindResource("TabHeader") as DataTemplate,
 			};
 
 			newTab.Content = new MainTab(project);
@@ -97,10 +97,10 @@ namespace Unreal_Launcher
 			// Insert tab item right before the last (+) tab item.
 			tabItems.Insert(count - 1, newTab);
 
-			Tab_Control.DataContext = tabItems;
+			TabControl_Projects.DataContext = tabItems;
 
 			// Select newly added tab item.
-			Tab_Control.SelectedItem = newTab;
+			TabControl_Projects.SelectedItem = newTab;
 		}
 
 		private void OpenNewProject()
@@ -144,9 +144,9 @@ namespace Unreal_Launcher
 			return foundProject;
 		}
 
-		private void Tab_Control_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void TabControl_Projects_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (Tab_Control.SelectedItem is TabItem tab && tab.Header != null)
+			if (TabControl_Projects.SelectedItem is TabItem tab && tab.Header != null)
 			{
 				if (tab.Equals(tabAdd))
 				{
@@ -155,10 +155,10 @@ namespace Unreal_Launcher
 			}
 		}
 
-		private void btnDelete_Click(object sender, RoutedEventArgs e)
+		private void Button_Delete_Click(object sender, RoutedEventArgs e)
 		{
 			string tabName = (sender as System.Windows.Controls.Button).CommandParameter.ToString();
-			TabItem item = Tab_Control.Items.Cast<TabItem>().Where(i => i.Name.Equals(tabName)).FirstOrDefault() ?? throw new InvalidOperationException("Trying to remove a project tab that doest exist.");
+			TabItem item = TabControl_Projects.Items.Cast<TabItem>().Where(i => i.Name.Equals(tabName)).FirstOrDefault() ?? throw new InvalidOperationException("Trying to remove a project tab that doest exist.");
 
 			if (tabItems.Count > 1 && System.Windows.MessageBox.Show($"Are you sure you want to remove project '{item.Header}'?", "Remove Project", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
 			{
@@ -177,20 +177,20 @@ namespace Unreal_Launcher
 				Settings.Default.Save();
 
 				// clear tab control binding
-				Tab_Control.DataContext = null;
+				TabControl_Projects.DataContext = null;
 
 				tabItems.Remove(item);
 
 				// bind tab control
-				Tab_Control.DataContext = tabItems;
+				TabControl_Projects.DataContext = tabItems;
 
 				// select previously selected tab. if that is removed then select first tab
-				if (!(Tab_Control.SelectedItem is TabItem selectedTab) || selectedTab.Equals(item))
+				if (!(TabControl_Projects.SelectedItem is TabItem selectedTab) || selectedTab.Equals(item))
 				{
 					selectedTab = tabItems[0] != tabAdd ? tabItems[0] : null;
 				}
 
-				Tab_Control.SelectedItem = selectedTab;
+				TabControl_Projects.SelectedItem = selectedTab;
 			}
 		}
 	}

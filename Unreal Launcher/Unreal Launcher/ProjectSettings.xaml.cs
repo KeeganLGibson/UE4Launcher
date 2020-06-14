@@ -22,23 +22,23 @@ namespace Unreal_Launcher
 
 		private void UpdateSettings()
 		{
-			tbProjectNiceName.Text = string.IsNullOrWhiteSpace(_project.ProjectNiceName) ? _project.ProjectName : _project.ProjectNiceName;
+			TextBox_ProjectNiceName.Text = string.IsNullOrWhiteSpace(_project.ProjectNiceName) ? _project.ProjectName : _project.ProjectNiceName;
 
-			tbCompanyName.Text = _project.ProjectCompany;
-			tbEnginePath.Text = _project.EnginePath;
+			TextBox_CompanyName.Text = _project.ProjectCompany;
+			TextBox_EnginePath.Text = _project.EnginePath;
 
-			tbCustomCopyright.Text = _project.Copyright;
+			TextBox_CustomCopyright.Text = _project.Copyright;
 		}
 
 		private void ApplyNewSettings()
 		{
-			if (!string.IsNullOrWhiteSpace(tbProjectNiceName.Text))
+			if (!string.IsNullOrWhiteSpace(TextBox_ProjectNiceName.Text))
 			{
-				_project.ProjectNiceName = tbProjectNiceName.Text;
+				_project.ProjectNiceName = TextBox_ProjectNiceName.Text;
 			}
 
-			_project.ProjectCompany = tbCompanyName.Text;
-			_project.ProjectCompany = tbCustomCopyright.Text;
+			_project.ProjectCompany = TextBox_CompanyName.Text;
+			_project.ProjectCompany = TextBox_CustomCopyright.Text;
 
 			_project.SaveProject();
 		}
@@ -48,18 +48,18 @@ namespace Unreal_Launcher
 			Close();
 		}
 
-		private void btnOK_Click(object sender, RoutedEventArgs e)
+		private void Button_OK_Click(object sender, RoutedEventArgs e)
 		{
 			ApplyNewSettings();
 			CloseWindow();
 		}
 
-		private void btnApply_Click(object sender, RoutedEventArgs e)
+		private void Button_Apply_Click(object sender, RoutedEventArgs e)
 		{
 			ApplyNewSettings();
 		}
 
-		private void btnCancel_Click(object sender, RoutedEventArgs e)
+		private void Button_Cancel_Click(object sender, RoutedEventArgs e)
 		{
 			CloseWindow();
 		}

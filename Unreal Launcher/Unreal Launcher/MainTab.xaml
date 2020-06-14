@@ -1,11 +1,11 @@
 ﻿<UserControl x:Class="Unreal_Launcher.MainTab"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:local="clr-namespace:Unreal_Launcher"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -20,20 +20,20 @@
             <RowDefinition />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <GroupBox x:Name="groupBox" Header="Project Settings" Margin="5" Grid.ColumnSpan="3">
+        <GroupBox x:Name="GroupBox_Project" Header="Project Settings" Margin="5" Grid.ColumnSpan="3">
             <StackPanel Orientation="Vertical">
                 <DockPanel>
                     <Label Content="Project Name" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBlock x:Name="txtProjectNiceName" Text="" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,0,0,0" AllowDrop="False"/>
+                    <TextBlock x:Name="TextBlock_ProjectNiceName" Text="" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,0,0,0" AllowDrop="False"/>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="Directory" DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <Button x:Name="btnBrowseFolder" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center" Click="btnBrowseFolder_Click" Height="20" Width="20">
+                    <Button x:Name="Button_BrowseFolder" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center" Click="Button_BrowseFolder_Click" Height="20" Width="20">
                         <iconPacks:PackIconMaterial Kind="FolderOutline" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Button>
-                    <Label x:Name="lblProjectDir" Content="" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <Label x:Name="Label_ProjectDir" Content="" VerticalAlignment="Center" Margin="5,0,0,0"/>
                 </DockPanel>
-                <Button x:Name="btnProjectSettings" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center" Height="20" Click="btnProjectSettings_Click">
+                <Button x:Name="Button_ProjectSettings" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center" Height="20" Click="Button_ProjectSettings_Click">
                     <StackPanel Orientation="Horizontal" Height="20" VerticalAlignment="Center">
                         <iconPacks:PackIconMaterial Kind="Cog" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         <Label Content="Project Settings..." FontSize="8" VerticalAlignment="Center" HorizontalAlignment="Right"/>
@@ -42,13 +42,13 @@
             </StackPanel>
         </GroupBox>
         <StackPanel Orientation="Vertical" Grid.Row="1" Grid.RowSpan="2" Margin="5">
-            <Button x:Name="btnOpenEditor" Margin="3" Click="btnOpenEditor_Click" Height="40">
+            <Button x:Name="Button_OpenEditor" Margin="3" Click="Button_OpenEditor_Click" Height="40">
                 <StackPanel Orientation="Horizontal" Width="Auto">
                     <iconPacks:PackIconMaterial Kind="Unreal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3" />
                     <TextBlock Text="Open Editor" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="3"/>
                 </StackPanel>
             </Button>
-            <Button x:Name="btnPlayGame" DockPanel.Dock="Left" Margin="3" VerticalAlignment="Top" Click="btnPlayGame_Click" Height="28">
+            <Button x:Name="Button_PlayGame" DockPanel.Dock="Left" Margin="3" VerticalAlignment="Top" Click="Button_PlayGame_Click" Height="28">
                 <StackPanel Orientation="Horizontal" Width="Auto">
                     <iconPacks:PackIconMaterial Kind="Gamepad" VerticalAlignment="Center" Margin="3" />
                     <TextBlock Text="Play Game" VerticalAlignment="Center" Margin="3" HorizontalAlignment="Right" />
@@ -56,7 +56,7 @@
             </Button>
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Row="3" Margin="5" VerticalAlignment="Bottom">
-            <Button x:Name="btnKillAll" Margin="3" Click="btnKillAll_Click" Height="40" VerticalAlignment="Bottom" Background="#FF670000">
+            <Button x:Name="Button_KillAll" Margin="3" Click="Button_KillAll_Click" Height="40" VerticalAlignment="Bottom" Background="#FF670000">
                 <StackPanel Orientation="Horizontal" Width="Auto" HorizontalAlignment="Center" VerticalAlignment="Top">
                     <iconPacks:PackIconMaterial Kind="Alert" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3" Foreground="White" />
                     <TextBlock Text="Kill All" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="3" Foreground="White"/>
@@ -65,16 +65,16 @@
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" Margin="5">
             <Label Content="Map"></Label>
-            <ComboBox x:Name="cmbMaps" SelectionChanged="cmbMaps_SelectionChanged"/>
-            <CheckBox x:Name="cbFullScreen" Content="Fullscreen" Margin="0,3,0,0" Checked="cbFullScreen_Changed" Unchecked="cbFullScreen_Changed"/>
+            <ComboBox x:Name="ComboBox_Maps" SelectionChanged="ComboBox_Maps_SelectionChanged"/>
+            <CheckBox x:Name="CheckBox_FullScreen" Content="Fullscreen" Margin="0,3,0,0" Checked="CheckBox_FullScreen_Changed" Unchecked="CheckBox_FullScreen_Changed"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" Margin="5">
 
         </StackPanel>
         <Image Source="/Launcher.ico" Grid.Column="3" Grid.Row="0" />
         <StackPanel Orientation="Vertical" Grid.Column="3" Grid.Row="1" Grid.RowSpan="3" Margin="5">
-            <Button x:Name="btnNewClass" Margin="3
-                        " Width="125" Click="btnNewClass_Click" Height="28" VerticalAlignment="Center">
+            <Button x:Name="Button_NewClass" Margin="3
+                        " Width="125" Click="Button_NewClass_Click" Height="28" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal" Width="Auto">
                     <iconPacks:PackIconMaterial Kind="FileCode" />
                     <TextBlock Text="New Class" VerticalAlignment="Center" Margin="10,0,0,0" />
