@@ -64,12 +64,11 @@
             </Button>
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" Margin="5">
-            <Label Content="Map"></Label>
+            <Label Content="Start in Map:"></Label>
             <ComboBox x:Name="ComboBox_Maps" SelectionChanged="ComboBox_Maps_SelectionChanged"/>
             <CheckBox x:Name="CheckBox_FullScreen" Content="Fullscreen" Margin="0,3,0,0" Checked="CheckBox_FullScreen_Changed" Unchecked="CheckBox_FullScreen_Changed"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" Margin="5">
-
         </StackPanel>
         <Image Source="/Launcher.ico" Grid.Column="3" Grid.Row="0" />
         <StackPanel Orientation="Vertical" Grid.Column="3" Grid.Row="1" Grid.RowSpan="3" Margin="5">
