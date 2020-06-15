@@ -23,13 +23,14 @@
 // Constants
 
 // Prototypes
-
-{{#bIsUClass}}UCLASS(){{/bIsUClass}}
+{{#bIsUClass}}
+UCLASS(){{/bIsUClass}}
 class {{Class}}{{#ParentClass}} : public {{ParentClass}}{{/ParentClass}}
 {
-	// Member Functions
+{{#bIsUClass}}	GENERATED_BODY()
+{{/bIsUClass}}	// Member Functions
 public:
-	{{Class}}();
+{{Class}}();
 
 protected:
 
