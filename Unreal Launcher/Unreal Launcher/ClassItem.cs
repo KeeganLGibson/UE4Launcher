@@ -12,12 +12,17 @@ namespace Unreal_Launcher
 	{
 		private ClassItem _parent;
 
+		public ClassItem()
+		{
+			SubClasses = new List<ClassItem>();
+		}
+
 		public ClassItem(string className, string sourceFileLocation, bool isGameModule, ClassItem parent = null)
 		{
+			SubClasses = new List<ClassItem>();
+
 			ClassName = className;
 			SourceFileLocation = sourceFileLocation;
-
-			SubClasses = new List<ClassItem>();
 
 			IsGameModule = isGameModule;
 
@@ -94,13 +99,16 @@ namespace Unreal_Launcher
 				return this;
 			}
 
-			foreach (ClassItem subClass in SubClasses)
+			if (SubClasses != null)
 			{
-				ClassItem foundItem = subClass.FindClassByName(className);
-
-				if (foundItem != null)
+				foreach (ClassItem subClass in SubClasses)
 				{
-					return foundItem;
+					ClassItem foundItem = subClass.FindClassByName(className);
+
+					if (foundItem != null)
+					{
+						return foundItem;
+					}
 				}
 			}
 

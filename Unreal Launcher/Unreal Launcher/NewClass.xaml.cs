@@ -91,7 +91,7 @@ namespace Unreal_Launcher
 
 		private string GetClassCache()
 		{
-			return Project.ProjectDirectory + "/Saved/Tools/ClassCache.data";
+			return Project.ProjectDirectory + "/Saved/Tools/Classes.cache";
 		}
 
 		private void RepopulateTreeVis()
@@ -328,12 +328,6 @@ namespace Unreal_Launcher
 			data.Add("Year", DateTime.Now.Year.ToString());
 			data.Add("Class", TextBox_Class.Text);
 			data.Add("ParentClass", TextBox_Parent.Text);
-			data.Add("ProjectCompany", Project.ProjectCompany);
-
-			if (!string.IsNullOrWhiteSpace(Project.Copyright))
-			{
-				data.Add("CustomCopyright", Project.Copyright);
-			}
 
 			string description = TextBox_Description.Text;
 			data.Add("Description", string.IsNullOrWhiteSpace(description) ? "TODO:" : description);
