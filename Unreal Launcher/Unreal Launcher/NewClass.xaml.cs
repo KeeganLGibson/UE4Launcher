@@ -350,7 +350,7 @@ namespace Unreal_Launcher
 				? PathHelpers.EvaluateRelativePath(classAbsoluteSaveLocation, Path.GetDirectoryName(parentClass.SourceFileLocation))
 				: PathHelpers.EvaluateRelativePath(Path.Combine(Project.EnginePath, @"Engine\Source"), Path.GetDirectoryName(parentClass.SourceFileLocation));
 
-			parentSourceFile += Path.GetFileName(parentClass.SourceFileLocation);
+			parentSourceFile += "\\" + Path.GetFileName(parentClass.SourceFileLocation);
 
 			data.Add("ParentClassSource", parentSourceFile);
 
