@@ -28,14 +28,17 @@
                 </DockPanel>
                 <DockPanel>
                     <Label Content="Directory" DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <Button x:Name="Button_BrowseFolder" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center" Click="Button_BrowseFolder_Click" Height="20" Width="20">
-                        <iconPacks:PackIconMaterial Kind="FolderOutline" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Button x:Name="Button_BrowseFolder" DockPanel.Dock="Right" Margin="3" VerticalAlignment="Center" Click="Button_BrowseFolder_Click" Height="20" Width="91" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" Height="20" VerticalAlignment="Center" HorizontalAlignment="Left">
+                            <iconPacks:PackIconMaterial Kind="FolderOutline" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                            <Label Content="Explore..." FontSize="8" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        </StackPanel>
                     </Button>
                     <Label x:Name="Label_ProjectDir" Content="" VerticalAlignment="Center" Margin="5,0,0,0"/>
                 </DockPanel>
-                <Button x:Name="Button_ProjectSettings" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center" Height="20" Click="Button_ProjectSettings_Click">
+                <Button x:Name="Button_ProjectSettings" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center" Height="20" Click="Button_ProjectSettings_Click" Width="91">
                     <StackPanel Orientation="Horizontal" Height="20" VerticalAlignment="Center">
-                        <iconPacks:PackIconMaterial Kind="Cog" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <iconPacks:PackIconMaterial Kind="Cog" HorizontalAlignment="Left" VerticalAlignment="Center" />
                         <Label Content="Project Settings..." FontSize="8" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     </StackPanel>
                 </Button>
@@ -56,7 +59,7 @@
             </Button>
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Row="3" Margin="5" VerticalAlignment="Bottom">
-            <Button x:Name="Button_KillAll" Margin="3" Click="Button_KillAll_Click" Height="40" VerticalAlignment="Bottom" Background="#FF670000">
+            <Button x:Name="Button_KillAll" Margin="3" Click="Button_KillAll_Click" Height="40" VerticalAlignment="Bottom" Background="#FF670000" IsEnabled="False">
                 <StackPanel Orientation="Horizontal" Width="Auto" HorizontalAlignment="Center" VerticalAlignment="Top">
                     <iconPacks:PackIconMaterial Kind="Alert" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3" Foreground="White" />
                     <TextBlock Text="Kill All" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="3" Foreground="White"/>
