@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Keegan L Gibson. All rights reserved.
 
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using Squirrel;

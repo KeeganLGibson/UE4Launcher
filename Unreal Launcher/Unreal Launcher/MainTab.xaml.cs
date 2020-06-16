@@ -1,8 +1,13 @@
 ﻿// Copyright (c) Keegan L Gibson. All rights reserved.
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace Unreal_Launcher
 {
@@ -16,11 +21,18 @@ namespace Unreal_Launcher
 			InitializeComponent();
 
 			Project = project;
+			KillList = new List<Process>();
 
 			InitialiseUI();
+
+			InitKillTimer();
 		}
 
 		public Project Project { get; }
+
+		private List<Process> KillList { get;  }
+
+		private DispatcherTimer killTimer;
 
 		private void InitialiseUI()
 		{
@@ -52,10 +64,44 @@ namespace Unreal_Launcher
 			ComboBox_Maps.SelectedItem = string.IsNullOrWhiteSpace(Project.LaunchSettings.LastSelectedMap) ? "(Default)" : Project.LaunchSettings.LastSelectedMap;
 		}
 
+		private void InitKillTimer()
+		{
+			killTimer = new DispatcherTimer();
+			killTimer.Tick += new EventHandler(UpdateKillList_Tick);
+			killTimer.Interval = new TimeSpan(0, 0, 2);
+			killTimer.Start();
+		}
+
+		private void UpdateKillList_Tick(object sender, EventArgs e)
+		{
+			KillList.RemoveAll(proc => proc == null || proc.HasExited);
+
+			if (KillList.Count > 0)
+			{
+				Button_KillAll.IsEnabled = true;
+				Label_KillAll.Text = "Kill All (" + KillList.Count + ")";
+			}
+			else
+			{
+				Label_KillAll.Text = "Kill All";
+				Button_KillAll.IsEnabled = false;
+			}
+		}
+
 		private void Button_NewClass_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			NewClass newClassWindow = new NewClass(Project);
 			newClassWindow.ShowDialog();
+		}
+
+		private void StartProccess(ProcessStartInfo startInfo, bool addToKillList = false)
+		{
+			Process proc = Process.Start(startInfo);
+
+			if (addToKillList && proc != null)
+			{
+				KillList.Add(proc);
+			}
 		}
 
 		private void Button_OpenEditor_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -66,7 +112,7 @@ namespace Unreal_Launcher
 				Arguments = Project.GenerateEditorArguments(),
 			};
 
-			Process.Start(startInfo);
+			StartProccess(startInfo, false);
 		}
 
 		private void Button_PlayGame_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -77,7 +123,7 @@ namespace Unreal_Launcher
 				Arguments = Project.GenerateGameArguments(),
 			};
 
-			Process.Start(startInfo);
+			StartProccess(startInfo, true);
 		}
 
 		private void Button_BrowseFolder_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -88,7 +134,15 @@ namespace Unreal_Launcher
 
 		private void Button_KillAll_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			// TODO: Implement
+			MessageBoxResult result = MessageBox.Show("Are you sure you want to close all instances of " + Project.ProjectNiceName + " (excluding the Editor)?", "Kill All", MessageBoxButton.YesNo);
+
+			if (result == MessageBoxResult.Yes)
+			{
+				foreach (Process proc in KillList)
+				{
+					proc.Kill();
+				}
+			}
 		}
 
 		private void ComboBox_Maps_SelectionChanged(object sender, SelectionChangedEventArgs e)
