@@ -17,6 +17,13 @@ namespace Unreal_Launcher
 
 			Project = project;
 
+			InitialiseUI();
+		}
+
+		public Project Project { get; }
+
+		private void InitialiseUI()
+		{
 			TextBlock_ProjectNiceName.Text = Project.ProjectNiceName;
 			Label_ProjectDir.Content = Project.ProjectDirectory;
 			CheckBox_FullScreen.IsChecked = Project.LaunchSettings.FullScreen;
@@ -24,10 +31,10 @@ namespace Unreal_Launcher
 			FindAllMaps();
 		}
 
-		public Project Project { get; }
-
 		private void FindAllMaps()
 		{
+			ComboBox_Maps.Items.Clear();
+
 			string[] files = Directory.GetFiles(Path.Combine(Project.ProjectDirectory, @".\Content\"), "*umap", SearchOption.AllDirectories);
 
 			// add a black default;
@@ -98,6 +105,8 @@ namespace Unreal_Launcher
 		{
 			ProjectSettings projectSettings = new ProjectSettings(Project);
 			projectSettings.ShowDialog();
+
+			InitialiseUI();
 		}
 	}
 }
