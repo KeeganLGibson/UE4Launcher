@@ -10,10 +10,10 @@
         Title="New Class" WindowStyle="ToolWindow" Width="662.433" Height="461.618">
     <DockPanel Margin="5">
         <DockPanel DockPanel.Dock="Bottom" LastChildFill="True" Margin="0">
-            <Button x:Name="Button_Cancel" Content="Cancel" Margin="0" Padding="5,1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="Button_Cancel_Click"/>
-            <Button x:Name="Button_clear" Content="Clear" Margin="5,0,0,0" Padding="5,1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="Button_clear_Click"/>
-            <Button x:Name="Button_Rescan" Content="Rescan Source Files..." Margin="5,0,0,0" Padding="5,1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="Button_Rescan_Click"/>
-            <Button x:Name="Button_Create" Margin="0" Padding="5,1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="Button_Create_Click" DockPanel.Dock="Right">
+            <Button x:Name="Button_Cancel" Content="Cancel" Margin="0" Padding="5,1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="Button_Cancel_Click" IsTabStop="False"/>
+            <Button x:Name="Button_clear" Content="Clear" Margin="5,0,0,0" Padding="5,1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="Button_clear_Click" IsTabStop="False"/>
+            <Button x:Name="Button_Rescan" Content="Rescan Source Files..." Margin="5,0,0,0" Padding="5,1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="Button_Rescan_Click" IsTabStop="False"/>
+            <Button x:Name="Button_Create" Margin="0" Padding="5,1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="Button_Create_Click" DockPanel.Dock="Right" IsTabStop="False" TabIndex="50">
                 <StackPanel Orientation="Horizontal" Width="Auto">
                     <iconPacks:PackIconMaterial Kind="FileCode" />
                     <TextBlock Text="Create" VerticalAlignment="Center" Margin="10,0,0,0" />
@@ -26,32 +26,32 @@
         </DockPanel>
         <DockPanel DockPanel.Dock="Bottom" LastChildFill="True" Margin="0" VerticalAlignment="Center">
             <Label DockPanel.Dock="Left" Content="Path:" VerticalAlignment="Center"/>
-            <Button DockPanel.Dock="Right" x:Name="Button_BrowseSourceLocation" Padding="5,1" VerticalAlignment="Center" Click="Button_BrowseSourceLocation_Click">
+            <Button DockPanel.Dock="Right" x:Name="Button_BrowseSourceLocation" Padding="5,1" VerticalAlignment="Center" Click="Button_BrowseSourceLocation_Click" TabIndex="40">
                 <StackPanel Orientation="Horizontal" Width="Auto">
                     <iconPacks:PackIconMaterial Kind="FolderOpen" />
                     <TextBlock Text="Browse..." VerticalAlignment="Center" Margin="10,0,0,0" />
                 </StackPanel>
             </Button>
-            <TextBox x:Name="TextBox_SaveLocation" Text=".\Source\" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="43,0,5,0" MaxLines="1" AllowDrop="False"/>
+            <TextBox x:Name="TextBox_SaveLocation" Text=".\Source\" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="43,0,5,0" MaxLines="1" AllowDrop="False" IsTabStop="False"/>
         </DockPanel>
         <DockPanel DockPanel.Dock="Bottom" LastChildFill="True" Margin="0" VerticalAlignment="Center">
             <Label Content="Description:" VerticalAlignment="Center"/>
-            <TextBox x:Name="TextBox_Description" Text="" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,0,0,0" MaxLines="1" AllowDrop="False"/>
+            <TextBox x:Name="TextBox_Description" Text="" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,0,0,0" MaxLines="1" AllowDrop="False" TabIndex="30"/>
         </DockPanel>
         <DockPanel DockPanel.Dock="Bottom" LastChildFill="True" Margin="0" VerticalAlignment="Center">
             <Label Content="Class Name:" VerticalAlignment="Center"/>
-            <TextBox x:Name="TextBox_Class" Text="" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,0,0,0" MaxLines="1" AllowDrop="False"/>
+            <TextBox x:Name="TextBox_Class" Text="" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,0,0,0" MaxLines="1" AllowDrop="False" TabIndex="20"/>
         </DockPanel>
         <DockPanel DockPanel.Dock="Bottom" LastChildFill="True" Margin="0" VerticalAlignment="Center">
             <Label Content="Parent Class:" VerticalAlignment="Center"/>
-            <TextBox x:Name="TextBox_Parent" Text="" VerticalAlignment="Center" Margin="3,0,0,0" MaxLines="1" AllowDrop="False"/>
+            <TextBox x:Name="TextBox_Parent" Text="" VerticalAlignment="Center" Margin="3,0,0,0" MaxLines="1" AllowDrop="False" TabIndex="10"/>
         </DockPanel>
         <DockPanel LastChildFill="True">
             <DockPanel LastChildFill="True" DockPanel.Dock="Top">
                 <Label DockPanel.Dock="Left" Content="Parent Class Search:" VerticalAlignment="Center" Margin="0"/>
-                <CheckBox x:Name="CheckBox_AllClasses" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Checked="CheckBox_AllClasses_Changed" Unchecked="CheckBox_AllClasses_Changed" Margin="0,0,3,0"/>
+                <CheckBox x:Name="CheckBox_AllClasses" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Checked="CheckBox_AllClasses_Changed" Unchecked="CheckBox_AllClasses_Changed" Margin="0,0,3,0" IsTabStop="False"/>
                 <Label DockPanel.Dock="Right" Content="Show All:" HorizontalAlignment="Right" VerticalAlignment="Center" />
-                <TextBox x:Name="TextBox_ParentSearch" Text="" VerticalAlignment="Center" Margin="3,0" MaxLines="1" AllowDrop="False" TextChanged="TextBox_ParentSearch_TextChanged"/>
+                <TextBox x:Name="TextBox_ParentSearch" Text="" VerticalAlignment="Center" Margin="3,0" MaxLines="1" AllowDrop="False" TextChanged="TextBox_ParentSearch_TextChanged" TabIndex="0"/>
             </DockPanel>
             <TreeView x:Name="TreeView_ParentClasses" Margin="0" SelectedItemChanged="TreeView_ParentClasses_SelectedItemChanged"/>
         </DockPanel>
