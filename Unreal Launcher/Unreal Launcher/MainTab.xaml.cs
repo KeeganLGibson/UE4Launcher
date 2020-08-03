@@ -1,4 +1,4 @@
-﻿// Copyright (c) Keegan L Gibson. All rights reserved.
+// Copyright (c) Keegan L Gibson. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -147,7 +147,10 @@ namespace Unreal_Launcher
 
 		private void ComboBox_Maps_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			Project.LaunchSettings.LastSelectedMap = ComboBox_Maps.SelectedItem.ToString();
+			if (ComboBox_Maps.SelectedItem != null)
+			{
+				Project.LaunchSettings.LastSelectedMap = ComboBox_Maps.SelectedItem.ToString();
+			}
 		}
 
 		private void CheckBox_FullScreen_Changed(object sender, System.Windows.RoutedEventArgs e)

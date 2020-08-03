@@ -1,4 +1,4 @@
-﻿// Copyright (c) Keegan L Gibson. All rights reserved.
+// Copyright (c) Keegan L Gibson. All rights reserved.
 
 using System.Windows;
 
@@ -38,7 +38,7 @@ namespace Unreal_Launcher
 			}
 
 			_project.ProjectCompany = TextBox_CompanyName.Text;
-			_project.ProjectCompany = TextBox_CustomCopyright.Text;
+			_project.Copyright = TextBox_CustomCopyright.Text;
 
 			_project.SaveProject();
 		}
