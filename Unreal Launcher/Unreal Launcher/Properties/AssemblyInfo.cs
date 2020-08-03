@@ -1,4 +1,4 @@
-// Copyright (c) Keegan L Gibson. All rights reserved.
+﻿// Copyright (c) Keegan L Gibson. All rights reserved.
 
 using System.Reflection;
 using System.Resources;
