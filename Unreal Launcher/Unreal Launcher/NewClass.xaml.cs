@@ -199,8 +199,18 @@ namespace Unreal_Launcher
 			SourceRoot = new ClassItem("root", "Source", false);
 
 			List<string> headerFiles = new List<string>();
-			headerFiles.AddRange(Directory.GetFiles(Project.EnginePath + "/Engine/Source/", "*.h", SearchOption.AllDirectories));
-			headerFiles.AddRange(Directory.GetFiles(Project.EnginePath + "/Engine/Plugins/", "*.h", SearchOption.AllDirectories));
+
+			string engineSourceDir = Project.EnginePath + "/Engine/Source/";
+			if (Directory.Exists(engineSourceDir))
+			{
+				headerFiles.AddRange(Directory.GetFiles(engineSourceDir, "*.h", SearchOption.AllDirectories));
+			}
+
+			string enginePluginDir = Project.EnginePath + "/Engine/Plugins/";
+			if (Directory.Exists(enginePluginDir))
+			{
+				headerFiles.AddRange(Directory.GetFiles(enginePluginDir, "*.h", SearchOption.AllDirectories));
+			}
 
 			await Task.Run(() => RescanSourceFiles(headerFiles, false));
 			BinarySerialization.WriteToBinaryFile<ClassItem>(GetClassCache(), SourceRoot);
@@ -273,7 +283,7 @@ namespace Unreal_Launcher
 		private void Button_clear_Click(object sender, RoutedEventArgs e)
 		{
 			ClearForm();
-			TextBox_SaveLocation.Text = @".\Source\";
+			TextBox_SaveLocation.Text = @"./Source/";
 			TextBox_ParentSearch.Text = string.Empty;
 		}
 
@@ -300,7 +310,7 @@ namespace Unreal_Launcher
 			{
 				RootFolder = SpecialFolder.MyComputer,
 				ShowNewFolderButton = true,
-				SelectedPath = Project.ProjectDirectory + @"\Source\",
+				SelectedPath = Project.ProjectDirectory + @"/Source/",
 			};
 
 			DialogResult dialogResult = folderDialog.ShowDialog();
@@ -350,7 +360,10 @@ namespace Unreal_Launcher
 				? PathHelpers.EvaluateRelativePath(classAbsoluteSaveLocation, Path.GetDirectoryName(parentClass.SourceFileLocation))
 				: PathHelpers.EvaluateRelativePath(Path.Combine(Project.EnginePath, @"Engine\Source"), Path.GetDirectoryName(parentClass.SourceFileLocation));
 
-			parentSourceFile += "\\" + Path.GetFileName(parentClass.SourceFileLocation);
+			parentSourceFile += "/" + Path.GetFileName(parentClass.SourceFileLocation);
+
+			// Unreal Engine prefers forward slashes '/'
+			parentSourceFile = parentSourceFile.Replace(@"\", @"/");
 
 			data.Add("ParentClassSource", parentSourceFile);
 
