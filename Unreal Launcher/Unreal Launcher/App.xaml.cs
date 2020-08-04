@@ -19,15 +19,15 @@ namespace Unreal_Launcher
 		{
 			base.OnStartup(e);
 
+			CheckForUpdates();
+
 			// Upgrade User Settings across versions.
-			if (Settings.Default.UpgradeRequired)
+			if (Settings.Default != null && Settings.Default.UpgradeRequired)
 			{
 				Settings.Default.Upgrade();
 				Settings.Default.UpgradeRequired = false;
 				Settings.Default.Save();
 			}
-
-			CheckForUpdates();
 		}
 
 		private async void CheckForUpdates()
