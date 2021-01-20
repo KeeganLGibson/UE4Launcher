@@ -33,7 +33,7 @@ namespace Unreal_Launcher
 		public ProjectLaunchSettings LaunchSettings = new ProjectLaunchSettings();
 
 		[NonSerialized]
-		private bool projectInitialised = false;
+		public bool projectInitialised = false;
 
 		public Project()
 		{
@@ -51,14 +51,21 @@ namespace Unreal_Launcher
 			ProjectName = Path.GetFileNameWithoutExtension(ProjectFullPath);
 			ProjectDirectory = Path.GetDirectoryName(ProjectFullPath);
 
-			GetEngineDir();
-
-			if (string.IsNullOrWhiteSpace(ProjectNiceName))
+			if (File.Exists(ProjectFullPath))
 			{
-				ProjectNiceName = ProjectName;
-			}
+				GetEngineDir();
 
-			projectInitialised = true;
+				if (string.IsNullOrWhiteSpace(ProjectNiceName))
+				{
+					ProjectNiceName = ProjectName;
+				}
+
+				projectInitialised = true;
+			}
+			else
+			{
+				MessageBox.Show("Unable to find file: '" + ProjectFullPath + "'!", "Unable to find project file!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+			}
 		}
 
 		public string GenerateEditorArguments()

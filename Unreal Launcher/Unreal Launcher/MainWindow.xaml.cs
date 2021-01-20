@@ -44,7 +44,11 @@ namespace Unreal_Launcher
 					if (project != null)
 					{
 						project.Init();
-						AddProjectTab(project);
+
+						if (project.projectInitialised)
+						{
+							AddProjectTab(project);
+						}
 					}
 				}
 			}
