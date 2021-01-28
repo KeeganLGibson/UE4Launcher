@@ -57,6 +57,18 @@
                     <TextBlock Text="Play Game" VerticalAlignment="Center" Margin="3" HorizontalAlignment="Right" />
                 </StackPanel>
             </Button>
+            <Button x:Name="Button_StartServer" DockPanel.Dock="Left" Margin="3" VerticalAlignment="Top" Click="Button_StartServer_Click" Height="28">
+                <StackPanel Orientation="Horizontal" Width="Auto">
+                    <iconPacks:PackIconMaterial Kind="ServerNetwork" VerticalAlignment="Center" Margin="3" />
+                    <TextBlock Text="Start Server" VerticalAlignment="Center" Margin="3" HorizontalAlignment="Right" />
+                </StackPanel>
+            </Button>
+            <Button x:Name="Button_StartClient" DockPanel.Dock="Left" Margin="3" VerticalAlignment="Top" Click="Button_StartClient_Click" Height="28">
+                <StackPanel Orientation="Horizontal" Width="Auto">
+                    <iconPacks:PackIconMaterial Kind="DesktopClassic" VerticalAlignment="Center" Margin="3" />
+                    <TextBlock Text="Start Client" VerticalAlignment="Center" Margin="3" HorizontalAlignment="Right" />
+                </StackPanel>
+            </Button>
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Row="3" Margin="5" VerticalAlignment="Bottom">
             <Button x:Name="Button_KillAll" Margin="3" Click="Button_KillAll_Click" Height="40" VerticalAlignment="Bottom" Background="#FF670000">

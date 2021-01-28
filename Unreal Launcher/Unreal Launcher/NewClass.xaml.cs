@@ -369,6 +369,8 @@ namespace Unreal_Launcher
 
 			string svaeFolder = Path.Combine(Project.ProjectDirectory, TextBox_SaveLocation.Text);
 
+			Directory.CreateDirectory(svaeFolder);
+
 			using (StreamReader streamReader = new StreamReader(@".\Header.mustache", Encoding.UTF8))
 			{
 				string output = stubble.Render(streamReader.ReadToEnd(), data);

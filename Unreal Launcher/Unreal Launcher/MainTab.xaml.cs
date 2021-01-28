@@ -126,6 +126,28 @@ namespace Unreal_Launcher
 			StartProccess(startInfo, true);
 		}
 
+		private void Button_StartServer_Click(object sender, RoutedEventArgs e)
+		{
+			ProcessStartInfo startInfo = new ProcessStartInfo
+			{
+				FileName = Path.Combine(Project.EnginePath, @".\Engine\Binaries\Win64\UE4Editor.exe"),
+				Arguments = Project.GenerateServerArguments(),
+			};
+
+			StartProccess(startInfo, true);
+		}
+
+		private void Button_StartClient_Click(object sender, RoutedEventArgs e)
+		{
+			ProcessStartInfo startInfo = new ProcessStartInfo
+			{
+				FileName = Path.Combine(Project.EnginePath, @".\Engine\Binaries\Win64\UE4Editor.exe"),
+				Arguments = Project.GenerateClientArguments(),
+			};
+
+			StartProccess(startInfo, true);
+		}
+
 		private void Button_BrowseFolder_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			// opens explorer)

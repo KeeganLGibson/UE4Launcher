@@ -68,6 +68,7 @@ namespace Unreal_Launcher
 			}
 		}
 
+		// Command Line Arguments the Order is Important!
 		public string GenerateEditorArguments()
 		{
 			SaveProject();
@@ -80,13 +81,43 @@ namespace Unreal_Launcher
 			return arguments;
 		}
 
-		// Order is Important!
+		// Command Line Arguments the Order is Important!
 		public string GenerateGameArguments()
 		{
 			SaveProject();
 
 			string arguments = ProjectFullPath;
 			arguments += GetMapAsLaunchArgument();
+
+			arguments += @" -skipcompile -game";
+
+			if (!LaunchSettings.FullScreen)
+			{
+				arguments += @" -WINDOWED -ResX=960 -ResY=540";
+			}
+
+			return arguments;
+		}
+
+		// Command Line Arguments the Order is Important!
+		public string GenerateServerArguments()
+		{
+			SaveProject();
+
+			string arguments = ProjectFullPath;
+			arguments += GetMapAsLaunchArgument();
+
+			arguments += @" -server -log";
+
+			return arguments;
+		}
+
+		public string GenerateClientArguments()
+		{
+			SaveProject();
+
+			string arguments = ProjectFullPath;
+			arguments += @" 127.0.0.1";
 
 			arguments += @" -skipcompile -game";
 
