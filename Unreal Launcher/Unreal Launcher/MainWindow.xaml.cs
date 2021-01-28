@@ -32,6 +32,8 @@ namespace Unreal_Launcher
 				Header = "+",
 			};
 
+			Title = Title + " - Version : " + typeof(MainWindow).Assembly.GetName().Version;
+
 			tabItems.Add(tabAdd);
 			TabControl_Projects.DataContext = tabItems;
 			TabControl_Projects.SelectedIndex = -1;
