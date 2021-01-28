@@ -114,21 +114,24 @@ namespace Unreal_Launcher
 				Filter = ProjectFileFilterType,
 			};
 
-			DialogResult result = projectDialog.ShowDialog();
-
-			if (result == System.Windows.Forms.DialogResult.OK)
+			Dispatcher.BeginInvoke(new Action(() =>
 			{
-				string filename = projectDialog.FileName;
-				bool foundProject = DoesProjectAlreadyExist(filename);
+				DialogResult result = projectDialog.ShowDialog();
 
-				if (!foundProject)
+				if (result == System.Windows.Forms.DialogResult.OK)
 				{
-					Project project = new Project(filename);
-					Settings.Default.Projects.Add(JsonConvert.SerializeObject(project));
-					Settings.Default.Save();
-					AddProjectTab(project);
+					string filename = projectDialog.FileName;
+					bool foundProject = DoesProjectAlreadyExist(filename);
+
+					if (!foundProject)
+					{
+						Project project = new Project(filename);
+						Settings.Default.Projects.Add(JsonConvert.SerializeObject(project));
+						Settings.Default.Save();
+						AddProjectTab(project);
+					}
 				}
-			}
+			}));
 		}
 
 		private bool DoesProjectAlreadyExist(string filename)
