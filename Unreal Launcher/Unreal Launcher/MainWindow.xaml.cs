@@ -40,6 +40,8 @@ namespace Unreal_Launcher
 
 			if (Settings.Default.Projects != null)
 			{
+				System.Collections.Specialized.StringCollection InvalidProjects = new System.Collections.Specialized.StringCollection();
+
 				foreach (string projectstr in Settings.Default.Projects)
 				{
 					Project project = JsonConvert.DeserializeObject<Project>(projectstr);
@@ -51,7 +53,17 @@ namespace Unreal_Launcher
 						{
 							AddProjectTab(project);
 						}
+						else
+						{
+							InvalidProjects.Add(projectstr);
+						}
 					}
+				}
+
+				// Loop through projects that could not be found on disk and remove them.
+				foreach (string invalidProjectstr in InvalidProjects)
+				{
+					Settings.Default.Projects.Remove(invalidProjectstr);
 				}
 			}
 			else
