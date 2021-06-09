@@ -13,7 +13,7 @@ namespace Unreal_Launcher
 	/// </summary>
 	public partial class App : Application
 	{
-		private const string RepoUrl = "https://github.com/KeeganLGibson/UE4Launcher";
+		private const string RepoUrl = "https://d1ekcf247n7aun.cloudfront.net";
 
 		protected override void OnStartup(StartupEventArgs e)
 		{
@@ -33,12 +33,9 @@ namespace Unreal_Launcher
 		private async void CheckForUpdates()
 		{
 			// Check for Updates
-			using (Task<UpdateManager> mgr = UpdateManager.GitHubUpdateManager(RepoUrl))
+			using (var mgr = new UpdateManager(RepoUrl))
 			{
-				using (UpdateManager result = await mgr)
-				{
-					await result.UpdateApp();
-				}
+				await mgr.UpdateApp();
 			}
 		}
 	}
