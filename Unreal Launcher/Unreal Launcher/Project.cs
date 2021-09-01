@@ -91,6 +91,11 @@ namespace Unreal_Launcher
 
 			arguments += @" -skipcompile -game";
 
+			if (LaunchSettings.Log)
+			{
+				arguments += @" -log";
+			}
+
 			if (!LaunchSettings.FullScreen)
 			{
 				arguments += @" -WINDOWED -ResX=960 -ResY=540";
@@ -107,7 +112,12 @@ namespace Unreal_Launcher
 			string arguments = ProjectFullPath;
 			arguments += GetMapAsLaunchArgument();
 
-			arguments += @" -server -log";
+			arguments += @" -server";
+
+			if (LaunchSettings.Log)
+			{
+				arguments += @" -log";
+			}
 
 			return arguments;
 		}
@@ -120,6 +130,11 @@ namespace Unreal_Launcher
 			arguments += @" 127.0.0.1";
 
 			arguments += @" -skipcompile -game";
+
+			if (LaunchSettings.Log)
+			{
+				arguments += @" -log";
+			}
 
 			if (!LaunchSettings.FullScreen)
 			{

@@ -39,6 +39,7 @@ namespace Unreal_Launcher
 			TextBlock_ProjectNiceName.Text = Project.ProjectNiceName;
 			Label_ProjectDir.Content = Project.ProjectDirectory;
 			CheckBox_FullScreen.IsChecked = Project.LaunchSettings.FullScreen;
+			CheckBox_Log.IsChecked = Project.LaunchSettings.Log;
 
 			FindAllMaps();
 		}
@@ -186,6 +187,11 @@ namespace Unreal_Launcher
 			projectSettings.ShowDialog();
 
 			InitialiseUI();
+		}
+
+		private void CheckBox_Log_Changed(object sender, RoutedEventArgs e)
+		{
+			Project.LaunchSettings.Log = CheckBox_Log.IsChecked ?? false;
 		}
 	}
 }
