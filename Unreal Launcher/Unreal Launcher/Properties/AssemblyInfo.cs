@@ -13,7 +13,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Keegan Gibson")]
 [assembly: AssemblyProduct("Unreal Project Launcher")]
-[assembly: AssemblyCopyright("Copyright ©Keegan GIbson  2020")]
+[assembly: AssemblyCopyright("Copyright ©Keegan GIbson  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -42,6 +42,6 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.1.6")]
-[assembly: AssemblyFileVersion("0.1.6")]
+[assembly: AssemblyVersion("0.1.7")]
+[assembly: AssemblyFileVersion("0.1.7")]
 [assembly: NeutralResourcesLanguage("en-NZ")]
