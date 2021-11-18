@@ -40,7 +40,7 @@ namespace Unreal_Launcher
 
 			if (Settings.Default.Projects != null)
 			{
-				System.Collections.Specialized.StringCollection InvalidProjects = new System.Collections.Specialized.StringCollection();
+				System.Collections.Specialized.StringCollection invalidProjects = new System.Collections.Specialized.StringCollection();
 
 				foreach (string projectstr in Settings.Default.Projects)
 				{
@@ -49,19 +49,19 @@ namespace Unreal_Launcher
 					{
 						project.Init();
 
-						if (project.projectInitialised)
+						if (project.ProjectInitialised)
 						{
 							AddProjectTab(project);
 						}
 						else
 						{
-							InvalidProjects.Add(projectstr);
+							invalidProjects.Add(projectstr);
 						}
 					}
 				}
 
 				// Loop through projects that could not be found on disk and remove them.
-				foreach (string invalidProjectstr in InvalidProjects)
+				foreach (string invalidProjectstr in invalidProjects)
 				{
 					Settings.Default.Projects.Remove(invalidProjectstr);
 				}

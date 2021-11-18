@@ -33,7 +33,7 @@ namespace Unreal_Launcher
 		public ProjectLaunchSettings LaunchSettings = new ProjectLaunchSettings();
 
 		[NonSerialized]
-		public bool projectInitialised = false;
+		public bool ProjectInitialised = false;
 
 		public Project()
 		{
@@ -60,7 +60,7 @@ namespace Unreal_Launcher
 					ProjectNiceName = ProjectName;
 				}
 
-				projectInitialised = true;
+				ProjectInitialised = true;
 			}
 			else
 			{
@@ -166,7 +166,7 @@ namespace Unreal_Launcher
 
 		public void SaveProject()
 		{
-			if (ProjectName != null && projectInitialised)
+			if (ProjectName != null && ProjectInitialised)
 			{
 				for (int i = 0; i < Settings.Default.Projects.Count; ++i)
 				{
