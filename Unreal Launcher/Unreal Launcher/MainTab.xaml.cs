@@ -32,11 +32,11 @@ namespace Unreal_Launcher
 
 		private List<Process> KillList { get;  }
 
-		private DispatcherTimer killTimer;
+		private DispatcherTimer _killTimer;
 
 		private void InitialiseUI()
 		{
-			TextBlock_ProjectNiceName.Text = Project.ProjectNiceName;
+			TextBlock_ProjectNiceName.Text = Project.NiceName;
 			Label_ProjectDir.Content = Project.ProjectDirectory;
 			CheckBox_FullScreen.IsChecked = Project.LaunchSettings.FullScreen;
 			CheckBox_Log.IsChecked = Project.LaunchSettings.Log;
@@ -83,10 +83,10 @@ namespace Unreal_Launcher
 
 		private void InitKillTimer()
 		{
-			killTimer = new DispatcherTimer();
-			killTimer.Tick += new EventHandler(UpdateKillList_Tick);
-			killTimer.Interval = new TimeSpan(0, 0, 2);
-			killTimer.Start();
+			_killTimer = new DispatcherTimer();
+			_killTimer.Tick += new EventHandler(UpdateKillList_Tick);
+			_killTimer.Interval = new TimeSpan(0, 0, 2);
+			_killTimer.Start();
 		}
 
 		private void UpdateKillList_Tick(object sender, EventArgs e)
@@ -173,7 +173,7 @@ namespace Unreal_Launcher
 
 		private void Button_KillAll_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			MessageBoxResult result = MessageBox.Show("Are you sure you want to close all instances of " + Project.ProjectNiceName + " (excluding the Editor)?", "Kill All", MessageBoxButton.YesNo);
+			MessageBoxResult result = MessageBox.Show("Are you sure you want to close all instances of " + Project.NiceName + " (excluding the Editor)?", "Kill All", MessageBoxButton.YesNo);
 
 			if (result == MessageBoxResult.Yes)
 			{
