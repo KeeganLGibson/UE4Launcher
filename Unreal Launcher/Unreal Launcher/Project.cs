@@ -90,6 +90,7 @@ namespace Unreal_Launcher
 			arguments += GetMapAsLaunchArgument();
 
 			arguments += @" -skipcompile -game";
+			arguments += GetSaveGameArguments();
 
 			if (LaunchSettings.Log)
 			{
@@ -113,6 +114,7 @@ namespace Unreal_Launcher
 			arguments += GetMapAsLaunchArgument();
 
 			arguments += @" -server";
+			arguments += GetSaveGameArguments();
 
 			if (LaunchSettings.Log)
 			{
@@ -271,6 +273,18 @@ namespace Unreal_Launcher
 			if (!string.IsNullOrWhiteSpace(LaunchSettings.LastSelectedMap) && LaunchSettings.LastSelectedMap != @"(Default)")
 			{
 				arguments += " " + LaunchSettings.LastSelectedMap;
+			}
+
+			return arguments;
+		}
+
+		private string GetSaveGameArguments()
+		{
+			string arguments = string.Empty;
+
+			if (!string.IsNullOrWhiteSpace(LaunchSettings.LastSelectedSaveGame))
+			{
+				arguments += "-SaveGame=" + LaunchSettings.LastSelectedSaveGame;
 			}
 
 			return arguments;

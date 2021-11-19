@@ -42,6 +42,7 @@ namespace Unreal_Launcher
 			CheckBox_Log.IsChecked = Project.LaunchSettings.Log;
 
 			FindAllMaps();
+			FindSaveGames();
 		}
 
 		private void FindAllMaps()
@@ -63,6 +64,21 @@ namespace Unreal_Launcher
 
 			// If no map selected use the project defaults.
 			ComboBox_Maps.SelectedItem = string.IsNullOrWhiteSpace(Project.LaunchSettings.LastSelectedMap) ? "(Default)" : Project.LaunchSettings.LastSelectedMap;
+		}
+
+		private void FindSaveGames()
+		{
+			ComboBox_SaveGame.Items.Clear();
+
+			string[] files = Directory.GetFiles(Path.Combine(Project.ProjectDirectory, @".\Saved\"), "*sav", SearchOption.AllDirectories);
+
+			// add a black default;
+			ComboBox_SaveGame.Items.Add(string.Empty);
+
+			foreach (string file in files)
+			{
+				ComboBox_SaveGame.Items.Add(Path.GetFileNameWithoutExtension(file));
+			}
 		}
 
 		private void InitKillTimer()
@@ -192,6 +208,14 @@ namespace Unreal_Launcher
 		private void CheckBox_Log_Changed(object sender, RoutedEventArgs e)
 		{
 			Project.LaunchSettings.Log = CheckBox_Log.IsChecked ?? false;
+		}
+
+		private void ComboBox_SaveGame_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (ComboBox_SaveGame.SelectedItem != null)
+			{
+				Project.LaunchSettings.LastSelectedSaveGame = ComboBox_SaveGame.SelectedItem.ToString();
+			}
 		}
 	}
 }
