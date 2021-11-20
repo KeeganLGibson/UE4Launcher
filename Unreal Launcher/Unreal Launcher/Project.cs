@@ -288,7 +288,7 @@ namespace Unreal_Launcher
 
 			if (!string.IsNullOrWhiteSpace(LaunchSettings.LastSelectedSaveGame))
 			{
-				arguments += "-SaveGame=" + LaunchSettings.LastSelectedSaveGame;
+				arguments = " -SaveGame=" + LaunchSettings.LastSelectedSaveGame;
 			}
 
 			return arguments;
