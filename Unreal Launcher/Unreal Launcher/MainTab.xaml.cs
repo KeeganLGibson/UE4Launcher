@@ -32,16 +32,17 @@ namespace Unreal_Launcher
 
 		private List<Process> KillList { get;  }
 
-		private DispatcherTimer killTimer;
+		private DispatcherTimer _killTimer;
 
 		private void InitialiseUI()
 		{
-			TextBlock_ProjectNiceName.Text = Project.ProjectNiceName;
+			TextBlock_ProjectNiceName.Text = Project.NiceName;
 			Label_ProjectDir.Content = Project.ProjectDirectory;
 			CheckBox_FullScreen.IsChecked = Project.LaunchSettings.FullScreen;
 			CheckBox_Log.IsChecked = Project.LaunchSettings.Log;
 
 			FindAllMaps();
+			FindSaveGames();
 		}
 
 		private void FindAllMaps()
@@ -65,12 +66,27 @@ namespace Unreal_Launcher
 			ComboBox_Maps.SelectedItem = string.IsNullOrWhiteSpace(Project.LaunchSettings.LastSelectedMap) ? "(Default)" : Project.LaunchSettings.LastSelectedMap;
 		}
 
+		private void FindSaveGames()
+		{
+			ComboBox_SaveGame.Items.Clear();
+
+			string[] files = Directory.GetFiles(Path.Combine(Project.ProjectDirectory, @".\Saved\"), "*sav", SearchOption.AllDirectories);
+
+			// add a black default;
+			ComboBox_SaveGame.Items.Add(string.Empty);
+
+			foreach (string file in files)
+			{
+				ComboBox_SaveGame.Items.Add(Path.GetFileNameWithoutExtension(file));
+			}
+		}
+
 		private void InitKillTimer()
 		{
-			killTimer = new DispatcherTimer();
-			killTimer.Tick += new EventHandler(UpdateKillList_Tick);
-			killTimer.Interval = new TimeSpan(0, 0, 2);
-			killTimer.Start();
+			_killTimer = new DispatcherTimer();
+			_killTimer.Tick += new EventHandler(UpdateKillList_Tick);
+			_killTimer.Interval = new TimeSpan(0, 0, 2);
+			_killTimer.Start();
 		}
 
 		private void UpdateKillList_Tick(object sender, EventArgs e)
@@ -157,7 +173,7 @@ namespace Unreal_Launcher
 
 		private void Button_KillAll_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			MessageBoxResult result = MessageBox.Show("Are you sure you want to close all instances of " + Project.ProjectNiceName + " (excluding the Editor)?", "Kill All", MessageBoxButton.YesNo);
+			MessageBoxResult result = MessageBox.Show("Are you sure you want to close all instances of " + Project.NiceName + " (excluding the Editor)?", "Kill All", MessageBoxButton.YesNo);
 
 			if (result == MessageBoxResult.Yes)
 			{
@@ -192,6 +208,14 @@ namespace Unreal_Launcher
 		private void CheckBox_Log_Changed(object sender, RoutedEventArgs e)
 		{
 			Project.LaunchSettings.Log = CheckBox_Log.IsChecked ?? false;
+		}
+
+		private void ComboBox_SaveGame_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (ComboBox_SaveGame.SelectedItem != null)
+			{
+				Project.LaunchSettings.LastSelectedSaveGame = ComboBox_SaveGame.SelectedItem.ToString();
+			}
 		}
 	}
 }

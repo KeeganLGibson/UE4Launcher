@@ -36,7 +36,7 @@ namespace Unreal_Launcher
 
 			Project = project;
 
-			Title = "New Class : " + Project.ProjectNiceName;
+			Title = "New Class : " + Project.NiceName;
 			CheckBox_AllClasses.IsChecked = Settings.Default.bShowAllClasses;
 
 			LoadClassCache();

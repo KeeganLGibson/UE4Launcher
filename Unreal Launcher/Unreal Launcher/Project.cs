@@ -14,26 +14,30 @@ namespace Unreal_Launcher
 	[Serializable]
 	public class Project
 	{
-		public string ProjectFullPath;
+		private string _fullPath = string.Empty;
+		public string FullPath { get; set; }
 
-		[NonSerialized]
-		public string ProjectName;
-		[NonSerialized]
-		public string ProjectDirectory;
+		private string _niceName = string.Empty;
+		public string NiceName { get; set; }
 
-		public string ProjectNiceName;
-		public string ProjectCompany;
-		public string Copyright;
+		private string _company = string.Empty;
+		public string Company { get; set; }
 
-		[NonSerialized]
-		public string EngineAssociation;
-		[NonSerialized]
-		public string EnginePath;
+		private string _copyright = string.Empty;
+		public string Copyright { get; set; }
 
-		public ProjectLaunchSettings LaunchSettings = new ProjectLaunchSettings();
+		private ProjectLaunchSettings _launchSettings = new ProjectLaunchSettings();
+		public ProjectLaunchSettings LaunchSettings => _launchSettings;
 
-		[NonSerialized]
-		public bool ProjectInitialised = false;
+		public bool IsProjectInitialised { get; private set; } = false;
+
+		public string ProjectName { get; private set; } = string.Empty;
+
+		public string ProjectDirectory { get; private set; } = string.Empty;
+
+		public string EnginePath { get; private set; } = string.Empty;
+
+		public string EngineAssociation { get; private set; } = string.Empty;
 
 		public Project()
 		{
@@ -41,30 +45,30 @@ namespace Unreal_Launcher
 
 		public Project(string fullProjectPath)
 		{
-			ProjectFullPath = fullProjectPath;
+			FullPath = fullProjectPath;
 
 			Init();
 		}
 
 		public void Init()
 		{
-			ProjectName = Path.GetFileNameWithoutExtension(ProjectFullPath);
-			ProjectDirectory = Path.GetDirectoryName(ProjectFullPath);
+			ProjectName = Path.GetFileNameWithoutExtension(FullPath);
+			ProjectDirectory = Path.GetDirectoryName(FullPath);
 
-			if (File.Exists(ProjectFullPath))
+			if (File.Exists(FullPath))
 			{
 				GetEngineDir();
 
-				if (string.IsNullOrWhiteSpace(ProjectNiceName))
+				if (string.IsNullOrWhiteSpace(NiceName))
 				{
-					ProjectNiceName = ProjectName;
+					NiceName = ProjectName;
 				}
 
-				ProjectInitialised = true;
+				IsProjectInitialised = true;
 			}
 			else
 			{
-				MessageBox.Show("Unable to find file: '" + ProjectFullPath + "'!", "Unable to find project file!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				MessageBox.Show("Unable to find file: '" + FullPath + "'!", "Unable to find project file!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 			}
 		}
 
@@ -73,7 +77,7 @@ namespace Unreal_Launcher
 		{
 			SaveProject();
 
-			string arguments = ProjectFullPath;
+			string arguments = FullPath;
 			arguments += GetMapAsLaunchArgument();
 
 			arguments += @" -skipcompile";
@@ -86,10 +90,11 @@ namespace Unreal_Launcher
 		{
 			SaveProject();
 
-			string arguments = ProjectFullPath;
+			string arguments = FullPath;
 			arguments += GetMapAsLaunchArgument();
 
 			arguments += @" -skipcompile -game";
+			arguments += GetSaveGameArguments();
 
 			if (LaunchSettings.Log)
 			{
@@ -109,10 +114,11 @@ namespace Unreal_Launcher
 		{
 			SaveProject();
 
-			string arguments = ProjectFullPath;
+			string arguments = FullPath;
 			arguments += GetMapAsLaunchArgument();
 
 			arguments += @" -server";
+			arguments += GetSaveGameArguments();
 
 			if (LaunchSettings.Log)
 			{
@@ -126,7 +132,7 @@ namespace Unreal_Launcher
 		{
 			SaveProject();
 
-			string arguments = ProjectFullPath;
+			string arguments = FullPath;
 			arguments += @" 127.0.0.1";
 
 			arguments += @" -skipcompile -game";
@@ -148,12 +154,12 @@ namespace Unreal_Launcher
 		{
 			Dictionary<string, object> data = new Dictionary<string, object>
 			{
-				{ "ProjectFullPath", ProjectFullPath },
+				{ "ProjectFullPath", FullPath },
 				{ "ProjectDirectory", ProjectDirectory },
 				{ "EngineAssociation", EngineAssociation },
 				{ "EnginePath", EnginePath },
-				{ "ProjectName", ProjectNiceName },
-				{ "ProjectCompany", ProjectCompany },
+				{ "ProjectName", NiceName },
+				{ "ProjectCompany", Company },
 			};
 
 			if (!string.IsNullOrWhiteSpace(Copyright))
@@ -166,11 +172,11 @@ namespace Unreal_Launcher
 
 		public void SaveProject()
 		{
-			if (ProjectName != null && ProjectInitialised)
+			if (ProjectName != null && IsProjectInitialised)
 			{
 				for (int i = 0; i < Settings.Default.Projects.Count; ++i)
 				{
-					string escapedFiledname = ProjectFullPath.Replace("\\", "\\\\");
+					string escapedFiledname = FullPath.Replace("\\", "\\\\");
 					if (Settings.Default.Projects[i].Contains(escapedFiledname))
 					{
 						Settings.Default.Projects[i] = JsonConvert.SerializeObject(this);
@@ -182,7 +188,7 @@ namespace Unreal_Launcher
 
 		private void GetEngineDir()
 		{
-			string unrealProjectFile = File.ReadAllText(ProjectFullPath);
+			string unrealProjectFile = File.ReadAllText(FullPath);
 			dynamic data = JObject.Parse(unrealProjectFile);
 
 			EngineAssociation = data.EngineAssociation;
@@ -271,6 +277,18 @@ namespace Unreal_Launcher
 			if (!string.IsNullOrWhiteSpace(LaunchSettings.LastSelectedMap) && LaunchSettings.LastSelectedMap != @"(Default)")
 			{
 				arguments += " " + LaunchSettings.LastSelectedMap;
+			}
+
+			return arguments;
+		}
+
+		private string GetSaveGameArguments()
+		{
+			string arguments = string.Empty;
+
+			if (!string.IsNullOrWhiteSpace(LaunchSettings.LastSelectedSaveGame))
+			{
+				arguments = " -SaveGame=" + LaunchSettings.LastSelectedSaveGame;
 			}
 
 			return arguments;

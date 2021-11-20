@@ -22,9 +22,9 @@ namespace Unreal_Launcher
 
 		private void UpdateSettings()
 		{
-			TextBox_ProjectNiceName.Text = string.IsNullOrWhiteSpace(_project.ProjectNiceName) ? _project.ProjectName : _project.ProjectNiceName;
+			TextBox_ProjectNiceName.Text = string.IsNullOrWhiteSpace(_project.NiceName) ? _project.ProjectName : _project.NiceName;
 
-			TextBox_CompanyName.Text = _project.ProjectCompany;
+			TextBox_CompanyName.Text = _project.Company;
 			TextBox_EnginePath.Text = _project.EnginePath;
 
 			TextBox_CustomCopyright.Text = _project.Copyright;
@@ -34,10 +34,10 @@ namespace Unreal_Launcher
 		{
 			if (!string.IsNullOrWhiteSpace(TextBox_ProjectNiceName.Text))
 			{
-				_project.ProjectNiceName = TextBox_ProjectNiceName.Text;
+				_project.NiceName = TextBox_ProjectNiceName.Text;
 			}
 
-			_project.ProjectCompany = TextBox_CompanyName.Text;
+			_project.Company = TextBox_CompanyName.Text;
 			_project.Copyright = TextBox_CustomCopyright.Text;
 
 			_project.SaveProject();
