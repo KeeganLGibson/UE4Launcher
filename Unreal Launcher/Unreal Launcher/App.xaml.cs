@@ -18,19 +18,6 @@ namespace Unreal_Launcher
 		public bool UpdateAvailable { get; private set; } = false;
 		public string UpdateVersion { get; private set; } = string.Empty;
 
-		protected override void OnStartup(StartupEventArgs e)
-		{
-			base.OnStartup(e);
-
-			// Upgrade User Settings across versions.
-			if (Settings.Default != null && Settings.Default.UpgradeRequired)
-			{
-				Settings.Default.Upgrade();
-				Settings.Default.UpgradeRequired = false;
-				Settings.Default.Save();
-			}
-		}
-
 		public async void CheckForUpdates(System.Action<int> downloadProgressCallback, System.Action<int> installProgressCallback)
 		{
 			// Check for Updates
@@ -50,6 +37,19 @@ namespace Unreal_Launcher
 				}
 
 				await mgr.ApplyReleases(updates.Result, installProgressCallback);
+			}
+		}
+
+		protected override void OnStartup(StartupEventArgs e)
+		{
+			base.OnStartup(e);
+
+			// Upgrade User Settings across versions.
+			if (Settings.Default != null && Settings.Default.UpgradeRequired)
+			{
+				Settings.Default.Upgrade();
+				Settings.Default.UpgradeRequired = false;
+				Settings.Default.Save();
 			}
 		}
 	}
