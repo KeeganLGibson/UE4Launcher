@@ -94,6 +94,31 @@ namespace Unreal_Launcher
 				Settings.Default.Projects.AddRange(serialisedProject.ToArray());
 				Settings.Default.Save();
 			}
+
+			((App)System.Windows.Application.Current).CheckForUpdates(OnDownloadProgressChanged, OnInstallProgressChanges);
+		}
+
+		private void OnDownloadProgressChanged(int progress)
+		{
+			if (((App)System.Windows.Application.Current).UpdateAvailable)
+			{
+				Title = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Downloading Update " + progress + "%";
+			}
+		}
+
+		private void OnInstallProgressChanges(int progress)
+		{
+			if (((App)System.Windows.Application.Current).UpdateAvailable)
+			{
+				if (progress < 100)
+				{
+					Title = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Installing Update " + progress + "%";
+				}
+				else
+				{
+					Title = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Update " + ((App)System.Windows.Application.Current).UpdateVersion + " Ready!";
+				}
+			}
 		}
 
 		private void AddProjectTab(Project project)

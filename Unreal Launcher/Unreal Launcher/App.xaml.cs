@@ -15,11 +15,12 @@ namespace Unreal_Launcher
 	{
 		private const string RepoUrl = "https://d1ekcf247n7aun.cloudfront.net";
 
+		public bool UpdateAvailable { get; private set; } = false;
+		public string UpdateVersion { get; private set; } = string.Empty;
+
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
-
-			CheckForUpdates();
 
 			// Upgrade User Settings across versions.
 			if (Settings.Default != null && Settings.Default.UpgradeRequired)
@@ -30,12 +31,25 @@ namespace Unreal_Launcher
 			}
 		}
 
-		private async void CheckForUpdates()
+		public async void CheckForUpdates(System.Action<int> downloadProgressCallback, System.Action<int> installProgressCallback)
 		{
 			// Check for Updates
 			using (var mgr = new UpdateManager(RepoUrl))
 			{
-				await mgr.UpdateApp();
+				Task<UpdateInfo> updates = mgr.CheckForUpdate();
+				await updates;
+				if (updates.Result.ReleasesToApply.Count > 0)
+				{
+					UpdateAvailable = true;
+					UpdateVersion = updates.Result.FutureReleaseEntry.EntryAsString;
+				}
+
+				if (UpdateAvailable)
+				{
+					await mgr.DownloadReleases(updates.Result.ReleasesToApply, downloadProgressCallback);
+				}
+
+				await mgr.ApplyReleases(updates.Result, installProgressCallback);
 			}
 		}
 	}
