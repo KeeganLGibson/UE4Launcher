@@ -279,7 +279,6 @@ namespace Unreal_Launcher
 					}
 				}
 			}
-           
 
 			if (string.IsNullOrWhiteSpace(EnginePath))
 			{
