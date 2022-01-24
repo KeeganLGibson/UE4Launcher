@@ -264,6 +264,25 @@ namespace Unreal_Launcher
 
 			if (string.IsNullOrWhiteSpace(EnginePath))
 			{
+				string launcherInstalledFile = File.ReadAllText(@"C:\ProgramData\Epic\UnrealEngineLauncher\LauncherInstalled.dat");
+				dynamic launcherInstalledData = JObject.Parse(launcherInstalledFile);
+				if (launcherInstalledData.InstallationList != null)
+				{
+					foreach (dynamic engineInstallation in launcherInstalledData.InstallationList)
+                    {
+						string appVersion = engineInstallation.AppVersion;
+						if (appVersion.StartsWith(EngineAssociation))
+                        {
+							EnginePath = engineInstallation.InstallLocation;
+							break;
+						}
+					}
+				}
+			}
+           
+
+			if (string.IsNullOrWhiteSpace(EnginePath))
+			{
 				string strMsg = "Unable to find an engine for " + ProjectName + ", the engine association may need to be refreshed. Right click on the .uProjectFile, \"Switch Unreal Engine Version...\"";
 
 				MessageBox.Show(strMsg, "Oopsie'd " + ProjectName);
