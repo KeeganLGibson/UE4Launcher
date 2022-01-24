@@ -20,6 +20,10 @@ namespace Unreal_Launcher
 
 		public async void CheckForUpdates(System.Action<int> downloadProgressCallback, System.Action<int> installProgressCallback)
 		{
+			// Early out if in debug mode.
+		#if DEBUG
+			return;
+		#endif
 			// Check for Updates
 			using (var mgr = new UpdateManager(RepoUrl))
 			{
