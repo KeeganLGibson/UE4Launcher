@@ -32,15 +32,11 @@ namespace Unreal_Launcher
 				if (updates.Result.ReleasesToApply.Count > 0)
 				{
 					UpdateAvailable = true;
-					UpdateVersion = updates.Result.FutureReleaseEntry.EntryAsString;
-				}
+					UpdateVersion = updates.Result.FutureReleaseEntry.Version.ToString();
 
-				if (UpdateAvailable)
-				{
 					await mgr.DownloadReleases(updates.Result.ReleasesToApply, downloadProgressCallback);
+					await mgr.ApplyReleases(updates.Result, installProgressCallback);
 				}
-
-				await mgr.ApplyReleases(updates.Result, installProgressCallback);
 			}
 		}
 

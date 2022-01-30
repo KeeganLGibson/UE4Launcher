@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using Newtonsoft.Json;
 using Unreal_Launcher.Properties;
 
@@ -102,22 +103,32 @@ namespace Unreal_Launcher
 		{
 			if (((App)System.Windows.Application.Current).UpdateAvailable)
 			{
-				Title = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Downloading Update " + progress + "%";
+				Dispatcher.Invoke(DispatcherPriority.Normal, (Action)(() =>
+				{
+					Title = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Downloading Update " + progress + "%";
+				}));
 			}
 		}
 
 		private void OnInstallProgressChanges(int progress)
 		{
+			string newTitle = string.Empty;
+
 			if (((App)System.Windows.Application.Current).UpdateAvailable)
 			{
 				if (progress < 100)
 				{
-					Title = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Installing Update " + progress + "%";
+					newTitle = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Installing Update " + progress + "%";
 				}
 				else
 				{
-					Title = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Update " + ((App)System.Windows.Application.Current).UpdateVersion + " Ready!";
+					newTitle = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Update " + ((App)System.Windows.Application.Current).UpdateVersion + " Ready!";
 				}
+
+				Dispatcher.Invoke(DispatcherPriority.Normal, (Action)(() =>
+				{
+					Title = newTitle;
+				}));
 			}
 		}
 
