@@ -103,7 +103,7 @@ namespace Unreal_Launcher
 		{
 			if (((App)System.Windows.Application.Current).UpdateAvailable)
 			{
-				Dispatcher.Invoke(DispatcherPriority.Normal, (Action)(() =>
+				Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)(() =>
 				{
 					Title = "Unreal Project Launcher - Version : "
 					+ typeof(MainWindow).Assembly.GetName().Version
