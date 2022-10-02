@@ -39,6 +39,8 @@ namespace Unreal_Launcher
 
 		public string EngineAssociation { get; private set; } = string.Empty;
 
+		public BuildVersion BuildVersion { get; private set; } = new BuildVersion();
+
 		public Project()
 		{
 		}
@@ -186,6 +188,18 @@ namespace Unreal_Launcher
 			}
 		}
 
+		public string GetEditorPath()
+		{
+			string editorPath = Path.Combine(EnginePath, "Engine", "Binaries", "Win64", "UnrealEditor.exe");
+
+			if (BuildVersion.MajorVersion == 4)
+			{
+				editorPath = Path.Combine(EnginePath, "Engine", "Binaries", "Win64", "UE4Editor.exe");
+			}
+
+			return editorPath;
+		}
+
 		private void GetEngineDir()
 		{
 			string unrealProjectFile = File.ReadAllText(FullPath);
@@ -269,10 +283,10 @@ namespace Unreal_Launcher
 				if (launcherInstalledData.InstallationList != null)
 				{
 					foreach (dynamic engineInstallation in launcherInstalledData.InstallationList)
-                    {
+					{
 						string appVersion = engineInstallation.AppVersion;
 						if (appVersion.StartsWith(EngineAssociation))
-                        {
+						{
 							EnginePath = engineInstallation.InstallLocation;
 							break;
 						}
@@ -285,6 +299,15 @@ namespace Unreal_Launcher
 				string strMsg = "Unable to find an engine for " + ProjectName + ", the engine association may need to be refreshed. Right click on the .uProjectFile, \"Switch Unreal Engine Version...\"";
 
 				MessageBox.Show(strMsg, "Oopsie'd " + ProjectName);
+				return;
+			}
+
+			if (!BuildVersion.LoadFromJson(Path.Combine(EnginePath, "Engine", "Build", "Build.version")))
+			{
+				string strMsg = "Unable to determine engine engine version for: " + ProjectName + ",using the engine located at: " + EnginePath + ", the Build.version file may not be present.";
+
+				MessageBox.Show(strMsg, "Oopsie'd " + ProjectName);
+				return;
 			}
 		}
 

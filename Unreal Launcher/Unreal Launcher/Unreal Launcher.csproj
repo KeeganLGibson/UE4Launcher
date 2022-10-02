@@ -164,6 +164,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="BinarySerialization.cs" />
+    <Compile Include="BuildVersion.cs" />
     <Compile Include="ClassItem.cs" />
     <Compile Include="MainTab.xaml.cs">
       <DependentUpon>MainTab.xaml</DependentUpon>

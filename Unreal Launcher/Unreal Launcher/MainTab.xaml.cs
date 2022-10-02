@@ -125,7 +125,7 @@ namespace Unreal_Launcher
 		{
 			ProcessStartInfo startInfo = new ProcessStartInfo
 			{
-				FileName = Path.Combine(Project.EnginePath, @".\Engine\Binaries\Win64\UE4Editor.exe"),
+				FileName = Path.Combine(Project.EnginePath, Project.GetEditorPath()),
 				Arguments = Project.GenerateEditorArguments(),
 			};
 
@@ -136,7 +136,7 @@ namespace Unreal_Launcher
 		{
 			ProcessStartInfo startInfo = new ProcessStartInfo
 			{
-				FileName = Path.Combine(Project.EnginePath, @".\Engine\Binaries\Win64\UE4Editor.exe"),
+				FileName = Path.Combine(Project.EnginePath, Project.GetEditorPath()),
 				Arguments = Project.GenerateGameArguments(),
 			};
 
@@ -147,7 +147,7 @@ namespace Unreal_Launcher
 		{
 			ProcessStartInfo startInfo = new ProcessStartInfo
 			{
-				FileName = Path.Combine(Project.EnginePath, @".\Engine\Binaries\Win64\UE4Editor.exe"),
+				FileName = Path.Combine(Project.EnginePath, Project.GetEditorPath()),
 				Arguments = Project.GenerateServerArguments(),
 			};
 
@@ -158,7 +158,7 @@ namespace Unreal_Launcher
 		{
 			ProcessStartInfo startInfo = new ProcessStartInfo
 			{
-				FileName = Path.Combine(Project.EnginePath, @".\Engine\Binaries\Win64\UE4Editor.exe"),
+				FileName = Path.Combine(Project.EnginePath, Project.GetEditorPath()),
 				Arguments = Project.GenerateClientArguments(),
 			};
 
