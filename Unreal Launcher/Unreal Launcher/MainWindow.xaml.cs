@@ -105,7 +105,11 @@ namespace Unreal_Launcher
 			{
 				Dispatcher.Invoke(DispatcherPriority.Normal, (Action)(() =>
 				{
-					Title = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Downloading Update " + progress + "%";
+					Title = "Unreal Project Launcher - Version : "
+					+ typeof(MainWindow).Assembly.GetName().Version
+					+ " Downloading Update "
+					+ progress
+					+ "%";
 				}));
 			}
 		}
