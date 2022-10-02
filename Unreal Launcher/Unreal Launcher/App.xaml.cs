@@ -23,7 +23,7 @@ namespace Unreal_Launcher
 			// Early out if in debug mode.
 		#if DEBUG
 			return;
-		#endif
+		#else
 			// Check for Updates
 			using (var mgr = new UpdateManager(RepoUrl))
 			{
@@ -38,6 +38,7 @@ namespace Unreal_Launcher
 					await mgr.ApplyReleases(updates.Result, installProgressCallback);
 				}
 			}
+        #endif
 		}
 
 		protected override void OnStartup(StartupEventArgs e)
