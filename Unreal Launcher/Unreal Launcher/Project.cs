@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using System.Windows.Forms;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -70,7 +71,7 @@ namespace Unreal_Launcher
 			}
 			else
 			{
-				MessageBox.Show("Unable to find file: '" + FullPath + "'!", "Unable to find project file!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				System.Windows.MessageBox.Show("Unable to find file: '" + FullPath + "'!", "Unable to find project file!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 			}
 		}
 
@@ -209,19 +210,31 @@ namespace Unreal_Launcher
 
 			EnginePath = string.Empty;
 
-			// Binary Version of Unreal
-			// 64 Bit
-			RegistryKey localKey64 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
-			localKey64 = localKey64.OpenSubKey(@"SOFTWARE\EpicGames\Unreal Engine\" + EngineAssociation);
-			if (localKey64 != null)
-			{
-				object engineAssociationValue = localKey64.GetValue("InstalledDirectory");
-				if (engineAssociationValue != null)
-				{
-					EnginePath = engineAssociationValue.ToString();
-				}
+			// Source Code Version of Unreal.
+			// Assume the engine folder is located in the directory about the .uproject file, this is where UGS expects it to be.
+			EnginePath = Path.GetFullPath(Path.Combine(ProjectDirectory, "../"));
 
-				localKey64.Close();
+			if (!Directory.Exists(Path.Combine(EnginePath, "Engine")))
+			{
+				EnginePath = string.Empty;
+			}
+
+			// Binary Version of Unreal
+			if (string.IsNullOrWhiteSpace(EnginePath))
+			{
+				// 64 Bit
+				RegistryKey localKey64 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+				localKey64 = localKey64.OpenSubKey(@"SOFTWARE\EpicGames\Unreal Engine\" + EngineAssociation);
+				if (localKey64 != null)
+				{
+					object engineAssociationValue = localKey64.GetValue("InstalledDirectory");
+					if (engineAssociationValue != null)
+					{
+						EnginePath = engineAssociationValue.ToString();
+					}
+
+					localKey64.Close();
+				}
 			}
 
 			// 32 Bit
@@ -245,7 +258,7 @@ namespace Unreal_Launcher
 			// 64 Bit
 			if (string.IsNullOrWhiteSpace(EnginePath))
 			{
-				localKey64 = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
+				RegistryKey localKey64 = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
 				localKey64 = localKey64.OpenSubKey(@"Software\Epic Games\Unreal Engine\Builds");
 				if (localKey64 != null)
 				{
@@ -298,7 +311,7 @@ namespace Unreal_Launcher
 			{
 				string strMsg = "Unable to find an engine for " + ProjectName + ", the engine association may need to be refreshed. Right click on the .uProjectFile, \"Switch Unreal Engine Version...\"";
 
-				MessageBox.Show(strMsg, "Oopsie'd " + ProjectName);
+				System.Windows.MessageBox.Show(strMsg, "Oopsie'd " + ProjectName);
 				return;
 			}
 
@@ -306,7 +319,7 @@ namespace Unreal_Launcher
 			{
 				string strMsg = "Unable to determine engine engine version for: " + ProjectName + ",using the engine located at: " + EnginePath + ", the Build.version file may not be present.";
 
-				MessageBox.Show(strMsg, "Oopsie'd " + ProjectName);
+				System.Windows.MessageBox.Show(strMsg, "Oopsie'd " + ProjectName);
 				return;
 			}
 		}
