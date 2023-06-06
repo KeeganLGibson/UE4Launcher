@@ -49,21 +49,24 @@ namespace Unreal_Launcher
 		{
 			ComboBox_Maps.Items.Clear();
 
-			string[] files = Directory.GetFiles(Path.Combine(Project.ProjectDirectory, @".\Content\"), "*umap", SearchOption.AllDirectories);
-
-			// add a black default;
-			ComboBox_Maps.Items.Add("(Default)");
-
-			foreach (string file in files)
+			if (Directory.Exists(Project.GetContentDir()))
 			{
-				if (!file.Contains("Marketplace") && !file.Contains("StarterContent"))
-				{
-					ComboBox_Maps.Items.Add(Path.GetFileNameWithoutExtension(file));
-				}
-			}
+				string[] files = Directory.GetFiles(Project.GetContentDir(), "*umap", SearchOption.AllDirectories);
 
-			// If no map selected use the project defaults.
-			ComboBox_Maps.SelectedItem = string.IsNullOrWhiteSpace(Project.LaunchSettings.LastSelectedMap) ? "(Default)" : Project.LaunchSettings.LastSelectedMap;
+				// add a black default;
+				ComboBox_Maps.Items.Add("(Default)");
+
+				foreach (string file in files)
+				{
+					if (!file.Contains("Marketplace") && !file.Contains("StarterContent"))
+					{
+						ComboBox_Maps.Items.Add(Path.GetFileNameWithoutExtension(file));
+					}
+				}
+
+				// If no map selected use the project defaults.
+				ComboBox_Maps.SelectedItem = string.IsNullOrWhiteSpace(Project.LaunchSettings.LastSelectedMap) ? "(Default)" : Project.LaunchSettings.LastSelectedMap;
+			}
 		}
 
 		private void FindSaveGames()

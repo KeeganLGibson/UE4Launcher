@@ -201,6 +201,11 @@ namespace Unreal_Launcher
 			return editorPath;
 		}
 
+		public string GetContentDir()
+		{
+			return Path.Combine(ProjectDirectory, @".\Content\");
+		}
+
 		private void GetEngineDir()
 		{
 			string unrealProjectFile = File.ReadAllText(FullPath);
