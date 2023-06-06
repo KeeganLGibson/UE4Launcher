@@ -120,18 +120,18 @@ namespace Unreal_Launcher
 
 			if (((App)System.Windows.Application.Current).UpdateAvailable)
 			{
-				if (progress < 100)
-				{
-					newTitle = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Installing Update " + progress + "%";
-				}
-				else
-				{
-					newTitle = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Update " + ((App)System.Windows.Application.Current).UpdateVersion + " Ready!";
-				}
-
 				Dispatcher.Invoke(DispatcherPriority.Normal, (Action)(() =>
 				{
-					Title = newTitle;
+                    if (progress < 100)
+                    {
+                        newTitle = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Installing Update " + progress + "%";
+                    }
+                    else
+                    {
+                        newTitle = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Update " + ((App)System.Windows.Application.Current).UpdateVersion + " Ready!";
+                    }
+
+                    Title = newTitle;
 				}));
 			}
 		}
