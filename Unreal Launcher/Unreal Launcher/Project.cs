@@ -216,7 +216,7 @@ namespace Unreal_Launcher
 			EnginePath = string.Empty;
 
 			// Source Code Version of Unreal.
-			// Assume the engine folder is located in the directory about the .uproject file, this is where UGS expects it to be.
+			// Assume the engine folder is located in the directory above the .uproject file, this is where UGS expects it to be.
 			EnginePath = Path.GetFullPath(Path.Combine(ProjectDirectory, "../"));
 
 			if (!Directory.Exists(Path.Combine(EnginePath, "Engine")))
