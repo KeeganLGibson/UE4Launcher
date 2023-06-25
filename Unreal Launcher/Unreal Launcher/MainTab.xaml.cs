@@ -73,14 +73,19 @@ namespace Unreal_Launcher
 		{
 			ComboBox_SaveGame.Items.Clear();
 
-			string[] files = Directory.GetFiles(Path.Combine(Project.ProjectDirectory, @".\Saved\"), "*sav", SearchOption.AllDirectories);
-
-			// add a black default;
-			ComboBox_SaveGame.Items.Add(string.Empty);
-
-			foreach (string file in files)
+			string SaveGamePath = Path.Combine(Project.ProjectDirectory, @".\Saved\");
+			// Check if SaveGamePath folder exists
+			if (Directory.Exists(SaveGamePath))
 			{
-				ComboBox_SaveGame.Items.Add(Path.GetFileNameWithoutExtension(file));
+				string[] files = Directory.GetFiles(SaveGamePath, "*sav", SearchOption.AllDirectories);
+
+				// add a black default;
+				ComboBox_SaveGame.Items.Add(string.Empty);
+
+				foreach (string file in files)
+				{
+					ComboBox_SaveGame.Items.Add(Path.GetFileNameWithoutExtension(file));
+				}
 			}
 		}
 
