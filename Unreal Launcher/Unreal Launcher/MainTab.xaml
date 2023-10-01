@@ -63,12 +63,13 @@
                     <TextBlock Text="Start Server" VerticalAlignment="Center" Margin="3" HorizontalAlignment="Right" />
                 </StackPanel>
             </Button>
-            <Button x:Name="Button_StartClient" DockPanel.Dock="Left" Margin="3" VerticalAlignment="Top" Click="Button_StartClient_Click" Height="28">
-                <StackPanel Orientation="Horizontal" Width="Auto">
+            <Button x:Name="Button_StartClient" Click="Button_StartClient_Click" DockPanel.Dock="Left" Margin="3" VerticalAlignment="Top" Height="28">
+                <StackPanel Width="Auto" Orientation="Horizontal">
                     <iconPacks:PackIconMaterial Kind="DesktopClassic" VerticalAlignment="Center" Margin="3" />
                     <TextBlock Text="Start Client" VerticalAlignment="Center" Margin="3" HorizontalAlignment="Right" />
                 </StackPanel>
             </Button>
+            <TextBox x:Name="Text_ClientIP" Text="127.0.0.1" DockPanel.Dock="Left" Margin="3" VerticalAlignment="Top" Height="28" VerticalContentAlignment="Center" TextAlignment="Right" Padding="0,0,3,0"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Row="3" Margin="5" VerticalAlignment="Bottom">
             <Button x:Name="Button_KillAll" Margin="3" Click="Button_KillAll_Click" Height="40" VerticalAlignment="Bottom" Background="#FF670000">

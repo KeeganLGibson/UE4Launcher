@@ -164,10 +164,24 @@ namespace Unreal_Launcher
 
 		private void Button_StartClient_Click(object sender, RoutedEventArgs e)
 		{
+			string ip = Text_ClientIP.Text;
+
+			if (string.IsNullOrWhiteSpace(ip))
+			{
+				ip = "127.0.0.1";
+			}
+
+			// Check if IP address is valid
+			if (!System.Net.IPAddress.TryParse(ip, out _))
+			{
+                MessageBox.Show("Invalid IP address", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
 			ProcessStartInfo startInfo = new ProcessStartInfo
 			{
 				FileName = Path.Combine(Project.EnginePath, Project.GetEditorPath()),
-				Arguments = Project.GenerateClientArguments(),
+				Arguments = Project.GenerateClientArguments(ip),
 			};
 
 			StartProccess(startInfo, true);

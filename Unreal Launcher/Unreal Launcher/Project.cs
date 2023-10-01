@@ -131,12 +131,12 @@ namespace Unreal_Launcher
 			return arguments;
 		}
 
-		public string GenerateClientArguments()
+		public string GenerateClientArguments(string ip = "127.0.0.1")
 		{
 			SaveProject();
 
 			string arguments = FullPath;
-			arguments += @" 127.0.0.1";
+			arguments += @" " + ip;
 
 			arguments += @" -skipcompile -game";
 
