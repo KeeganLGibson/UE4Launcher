@@ -101,39 +101,43 @@ namespace Unreal_Launcher
 
 		private void OnDownloadProgressChanged(int progress)
 		{
-			//if (((App)System.Windows.Application.Current).UpdateAvailable)
-			//{
-			//	Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)(() =>
-			//	{
-			//		Title = "Unreal Project Launcher - Version : "
-			//		+ typeof(MainWindow).Assembly.GetName().Version
-			//		+ " Downloading Update "
-			//		+ progress
-			//		+ "%";
-			//	}));
-			//}
+			/** - Removed for now as it causes the application to crash when the update is installed.
+			if (((App)System.Windows.Application.Current).UpdateAvailable)
+			{
+			  Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)(() =>
+			  {
+				  Title = "Unreal Project Launcher - Version : "
+				  + typeof(MainWindow).Assembly.GetName().Version
+				  + " Downloading Update "
+				  + progress
+				  + "%";
+			  }));
+			}
+			**/
 		}
 
 		private void OnInstallProgressChanges(int progress)
 		{
-			//string newTitle = string.Empty;
+			/** - Removed for now as it causes the application to crash when the update is installed.
+			string newTitle = string.Empty;
 
-			//if (((App)System.Windows.Application.Current).UpdateAvailable)
-			//{
-			//	Dispatcher.Invoke(DispatcherPriority.Normal, (Action)(() =>
-			//	{
-			//		if (progress < 100)
-			//		{
-			//			newTitle = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Installing Update " + progress + "%";
-			//		}
-			//		else
-			//		{
-			//			newTitle = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Update " + ((App)System.Windows.Application.Current).UpdateVersion + " Ready!";
-			//		}
+			if (((App)System.Windows.Application.Current).UpdateAvailable)
+			{
+				Dispatcher.Invoke(DispatcherPriority.Normal, (Action)(() =>
+				{
+					if (progress < 100)
+					{
+						newTitle = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Installing Update " + progress + "%";
+					}
+					else
+					{
+						newTitle = "Unreal Project Launcher - Version : " + typeof(MainWindow).Assembly.GetName().Version + " Update " + ((App)System.Windows.Application.Current).UpdateVersion + " Ready!";
+					}
 
-			//		Title = newTitle;
-			//	}));
-			//}
+					Title = newTitle;
+				}));
+			}
+			**/
 		}
 
 		private void AddProjectTab(Project project)

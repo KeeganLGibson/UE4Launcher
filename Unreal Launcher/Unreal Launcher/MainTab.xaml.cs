@@ -73,11 +73,12 @@ namespace Unreal_Launcher
 		{
 			ComboBox_SaveGame.Items.Clear();
 
-			string SaveGamePath = Path.Combine(Project.ProjectDirectory, @".\Saved\");
+			string saveGamePath = Path.Combine(Project.ProjectDirectory, @".\Saved\");
+
 			// Check if SaveGamePath folder exists
-			if (Directory.Exists(SaveGamePath))
+			if (Directory.Exists(saveGamePath))
 			{
-				string[] files = Directory.GetFiles(SaveGamePath, "*sav", SearchOption.AllDirectories);
+				string[] files = Directory.GetFiles(saveGamePath, "*sav", SearchOption.AllDirectories);
 
 				// add a black default;
 				ComboBox_SaveGame.Items.Add(string.Empty);
@@ -174,9 +175,9 @@ namespace Unreal_Launcher
 			// Check if IP address is valid
 			if (!System.Net.IPAddress.TryParse(ip, out _))
 			{
-                MessageBox.Show("Invalid IP address", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+				MessageBox.Show("Invalid IP address", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
+			}
 
 			ProcessStartInfo startInfo = new ProcessStartInfo
 			{
