@@ -219,6 +219,7 @@
     </None>
     <CodeAnalysisDictionary Include="StyleCop.Analyzers.ruleset" />
     <AdditionalFiles Include="stylecop.json" />
+    <None Include="Struct.mustache" />
     <None Include="Ue4LauncherKey.pfx" />
     <None Include="Unreal Launcher_TemporaryKey.pfx" />
   </ItemGroup>

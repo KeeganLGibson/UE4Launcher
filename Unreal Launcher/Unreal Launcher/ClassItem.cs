@@ -17,10 +17,11 @@ namespace Unreal_Launcher
 			SubClasses = new List<ClassItem>();
 		}
 
-		public ClassItem(string className, string sourceFileLocation, bool isGameModule, ClassItem parent = null)
+		public ClassItem(string className, string sourceFileLocation, bool isGameModule, ClassItem parent = null, string objectType = "class")
 		{
 			SubClasses = new List<ClassItem>();
 
+			ObjectType = objectType;
 			ClassName = className;
 			SourceFileLocation = sourceFileLocation;
 
@@ -50,11 +51,10 @@ namespace Unreal_Launcher
 			}
 		}
 
+        public List<ClassItem> SubClasses { get; set; }
+        public string ObjectType { get; set; }
 		public string ClassName { get; set; }
-
 		public string SourceFileLocation { get; set; }
-
-		public List<ClassItem> SubClasses { get; set; }
 
 		public bool IsGameModule { get; set; }
 

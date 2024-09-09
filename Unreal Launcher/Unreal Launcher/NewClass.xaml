@@ -53,7 +53,7 @@
                 <Label DockPanel.Dock="Right" Content="Show All:" HorizontalAlignment="Right" VerticalAlignment="Center" />
                 <TextBox x:Name="TextBox_ParentSearch" Text="" VerticalAlignment="Center" Margin="3,0" MaxLines="1" AllowDrop="False" TextChanged="TextBox_ParentSearch_TextChanged" TabIndex="0"/>
             </DockPanel>
-            <TreeView x:Name="TreeView_ParentClasses" Margin="0" SelectedItemChanged="TreeView_ParentClasses_SelectedItemChanged"/>
+            <TreeView x:Name="TreeView_ParentClasses" Margin="0" SelectedItemChanged="TreeView_ParentClasses_SelectedItemChanged" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"/>
         </DockPanel>
     </DockPanel>
 </Window>

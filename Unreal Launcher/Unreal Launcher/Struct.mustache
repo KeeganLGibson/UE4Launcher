@@ -1,0 +1,34 @@
+﻿{{#CustomCopyright}}//	{{CustomCopyright}}
+{{/CustomCopyright}}//  {{ProjectName}}
+{{^CustomCopyright}}//
+//  {{Year}}(c) - Copyright {{ProjectCompany}}{{/CustomCopyright}}
+//
+//  File Name   :   {{FileName}}.h
+//  Description :   {{Description}}
+//
+
+#pragma once
+
+// Library Includes{{^bIsGameModule}}
+#include "{{ParentClassSource}}"{{/bIsGameModule}}
+
+// Local Includes{{#bIsGameModule}}
+#include "{{ParentClassSource}}"{{/bIsGameModule}}
+
+// This Includes{{#bIsUClass}}
+#include "{{FileName}}.generated.h"{{/bIsUClass}}
+
+// Types
+
+// Constants
+
+// Prototypes
+{{#bIsUClass}}
+// {{Description}}
+USTRUCT(){{/bIsUClass}}
+struct {{Class}}{{#ParentClass}} : public {{ParentClass}}{{/ParentClass}}
+{
+{{#bIsUClass}}	GENERATED_BODY()
+{{/bIsUClass}}
+
+};

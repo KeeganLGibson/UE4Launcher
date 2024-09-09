@@ -128,6 +128,8 @@ namespace Unreal_Launcher
 			{
 				KillList.Add(proc);
 			}
+
+			TextBlock_Command.Text = startInfo.Arguments;
 		}
 
 		private void Button_OpenEditor_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -239,6 +241,17 @@ namespace Unreal_Launcher
 			{
 				Project.LaunchSettings.LastSelectedSaveGame = ComboBox_SaveGame.SelectedItem.ToString();
 			}
+		}
+
+		private void Button_Execute_Click(object sender, RoutedEventArgs e)
+		{
+			ProcessStartInfo startInfo = new ProcessStartInfo
+			{
+				FileName = Path.Combine(Project.EnginePath, Project.GetEditorPath()),
+				Arguments = TextBlock_Command.Text,
+			};
+
+			StartProccess(startInfo, true);
 		}
 	}
 }

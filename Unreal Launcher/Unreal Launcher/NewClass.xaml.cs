@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,6 +30,10 @@ namespace Unreal_Launcher
 		private bool _isScanRunning = false;
 
 		private bool IsScanRunning { get => _isScanRunning; set => _isScanRunning = value; }
+
+		private Task UpdateVisibleItemsTask { get; set; }
+
+		private System.Windows.Threading.DispatcherTimer TypingTimer { get; set; }
 
 		public NewClass(Project project)
 		{
@@ -63,7 +68,7 @@ namespace Unreal_Launcher
 
 		private void SetProgressBarVisibility(Visibility visibility)
 		{
-			ProgressBar_Rescan.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate()
+			ProgressBar_Rescan.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
 			{
 				ProgressBar_Rescan.Visibility = visibility;
 			}));
@@ -103,9 +108,9 @@ namespace Unreal_Launcher
 		private void RescanSourceFiles(List<string> headerFiles, bool isGameModule)
 		{
 			// class GAME_API {Group1} : public {Group2}
-			Regex regex = new Regex(@"^(?!\s*\/\/*\s*)(?:\s*class\s*\w*\s+)([UAF]\w+)\s*(?:\s*:\s*public\s+)?([UAF]\w+)?(?:,\s+\w+\s+\w+)?$(?!;)");
+			Regex regex = new Regex(@"^(?!\s*\/\/*\s*)(?:\s*(class|struct)\s*\w*\s+)([UAF]\w+)(?:\s*:\s*public\s+)?(\w*)(?:,\s+\w+\s+\w+)*$(?!;)");
 
-			ProgressBar_Rescan.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate()
+			ProgressBar_Rescan.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
 			{
 				ProgressBar_Rescan.Maximum = headerFiles.Count;
 			}));
@@ -123,8 +128,9 @@ namespace Unreal_Launcher
 						if (match.Success)
 						{
 							// Write original line and the value.
-							string currentClass = match.Groups[1].Value;
-							string parentClass = match.Groups[2].Value;
+							string objectType = match.Groups[1].Value;
+							string currentClass = match.Groups[2].Value;
+							string parentClass = match.Groups[3].Value;
 
 							ClassItem parent = null;
 
@@ -135,7 +141,7 @@ namespace Unreal_Launcher
 								if (parent == null)
 								{
 									// Create a Temporary Parent to Be Updated Later
-									parent = new ClassItem(parentClass, string.Empty, isGameModule, SourceRoot);
+									parent = new ClassItem(parentClass, string.Empty, isGameModule, SourceRoot, objectType);
 								}
 							}
 							else
@@ -148,18 +154,23 @@ namespace Unreal_Launcher
 
 							if (classItem != null)
 							{
-								classItem.Parent = parent;
+								if (parent != null)
+								{
+									classItem.Parent = parent;
+								}
+
 								classItem.SourceFileLocation = headerFile;
+								classItem.ObjectType = objectType;
 							}
 							else
 							{
-								classItem = new ClassItem(currentClass, headerFile, isGameModule, parent);
+								classItem = new ClassItem(currentClass, headerFile, isGameModule, parent, objectType);
 							}
 						}
 					}
 				}
 
-				ProgressBar_Rescan.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate()
+				ProgressBar_Rescan.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
 				{
 					ProgressBar_Rescan.Value = i;
 				}));
@@ -220,7 +231,21 @@ namespace Unreal_Launcher
 
 		private void UpdateVisibleClasses()
 		{
-			FilterTreeView(TreeView_ParentClasses.Items, TextBox_ParentSearch.Text, (CheckBox_AllClasses.IsChecked ?? false) ? new string[] { } : new[] { "UObject", "AActor", "AGameMode", "ACharacter", "APlayerController", "AGameState", "APlayerState" });
+			if (UpdateVisibleItemsTask != null && !UpdateVisibleItemsTask.IsCompleted)
+			{
+				return;
+			}
+			else
+			{
+				UpdateVisibleItemsTask = Task.Factory.StartNew(async () =>
+				{
+					await Task.Delay(750);
+					System.Windows.Application.Current.Dispatcher.Invoke(() =>
+					{
+						FilterTreeView(TreeView_ParentClasses.Items, TextBox_ParentSearch.Text, (CheckBox_AllClasses.IsChecked ?? false) ? new string[] { } : new[] { "UObject", "AActor", "AGameMode", "ACharacter", "APlayerController", "AGameState", "APlayerState" });
+					});
+				});
+			}
 		}
 
 		// Return true if the parent should be visible.
@@ -278,6 +303,7 @@ namespace Unreal_Launcher
 		{
 			TextBox_Class.Text = string.Empty;
 			TextBox_Parent.Text = string.Empty;
+			TextBox_Description.Text = string.Empty;
 		}
 
 		private void Button_clear_Click(object sender, RoutedEventArgs e)
@@ -285,6 +311,7 @@ namespace Unreal_Launcher
 			ClearForm();
 			TextBox_SaveLocation.Text = @"./Source/";
 			TextBox_ParentSearch.Text = string.Empty;
+			TextBox_Description.Text = string.Empty;
 		}
 
 		private void Button_Cancel_Click(object sender, RoutedEventArgs e)
@@ -296,12 +323,36 @@ namespace Unreal_Launcher
 		{
 			TreeViewItem treeItem = (TreeViewItem)e.NewValue;
 
+			TypingTimer?.Stop();
 			TextBox_Parent.Text = treeItem != null ? treeItem.Header.ToString() : string.Empty;
 		}
 
 		private void TextBox_ParentSearch_TextChanged(object sender, TextChangedEventArgs e)
 		{
+			if (TextBox_Parent.IsEnabled)
+			{
+				if (TypingTimer == null)
+				{
+					TypingTimer = new System.Windows.Threading.DispatcherTimer();
+					TypingTimer.Interval = new TimeSpan(0, 0, 0, 0, 750);
+					TypingTimer.Tick += new EventHandler(HandleTypingTimerTimeout);
+				}
+				TypingTimer?.Stop();
+				TypingTimer?.Start();
+			}
+		}
+
+		private void HandleTypingTimerTimeout(object sender, EventArgs e)
+		{
+			var timer = sender as DispatcherTimer;
+			if (timer == null)
+			{
+				return;
+			}
+
 			UpdateVisibleClasses();
+
+			timer.Stop();
 		}
 
 		private void Button_BrowseSourceLocation_Click(object sender, RoutedEventArgs e)
@@ -371,22 +422,37 @@ namespace Unreal_Launcher
 
 			Directory.CreateDirectory(svaeFolder);
 
-			using (StreamReader streamReader = new StreamReader(@".\Header.mustache", Encoding.UTF8))
-			{
-				string output = stubble.Render(streamReader.ReadToEnd(), data);
 
-				using (StreamWriter streamWriter = new StreamWriter(Path.Combine(svaeFolder, fileName + ".h")))
+			if (parentClass.ObjectType == "class")
+			{
+				using (StreamReader streamReader = new StreamReader(@".\Header.mustache", Encoding.UTF8))
 				{
-					streamWriter.Write(output);
+					string output = stubble.Render(streamReader.ReadToEnd(), data);
+
+					using (StreamWriter streamWriter = new StreamWriter(Path.Combine(svaeFolder, fileName + ".h")))
+					{
+						streamWriter.Write(output);
+					}
+				}
+
+				using (StreamReader streamReader = new StreamReader(@".\Cpp.mustache", Encoding.UTF8))
+				{
+					string output = stubble.Render(streamReader.ReadToEnd(), data);
+					using (StreamWriter streamWriter = new StreamWriter(Path.Combine(svaeFolder, fileName + ".cpp")))
+					{
+						streamWriter.Write(output);
+					}
 				}
 			}
-
-			using (StreamReader streamReader = new StreamReader(@".\Cpp.mustache", Encoding.UTF8))
+			else if (parentClass.ObjectType == "struct")
 			{
-				string output = stubble.Render(streamReader.ReadToEnd(), data);
-				using (StreamWriter streamWriter = new StreamWriter(Path.Combine(svaeFolder, fileName + ".cpp")))
+				using (StreamReader streamReader = new StreamReader(@".\Struct.mustache", Encoding.UTF8))
 				{
-					streamWriter.Write(output);
+					string output = stubble.Render(streamReader.ReadToEnd(), data);
+					using (StreamWriter streamWriter = new StreamWriter(Path.Combine(svaeFolder, fileName + ".h")))
+					{
+						streamWriter.Write(output);
+					}
 				}
 			}
 

@@ -79,7 +79,7 @@
                 </StackPanel>
             </Button>
         </StackPanel>
-        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" Margin="5">
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" Margin="5,6,5,40">
             <Label Content="Start in Map:"></Label>
             <ComboBox x:Name="ComboBox_Maps" SelectionChanged="ComboBox_Maps_SelectionChanged"/>
             <Label Content="Save Game:"/>
@@ -87,17 +87,21 @@
             <CheckBox x:Name="CheckBox_FullScreen" Content="Fullscreen" Margin="0,3,0,0" Checked="CheckBox_FullScreen_Changed" Unchecked="CheckBox_FullScreen_Changed"/>
             <CheckBox x:Name="CheckBox_Log" Content="Log" Margin="0,3,0,0" Checked="CheckBox_Log_Changed" Unchecked="CheckBox_Log_Changed"/>
         </StackPanel>
-        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" Margin="5">
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="2" Grid.RowSpan="3" Margin="5,6,5,40">
         </StackPanel>
         <Image Source="/Launcher.ico" Grid.Column="3" Grid.Row="0" />
-        <StackPanel Orientation="Vertical" Grid.Column="3" Grid.Row="1" Grid.RowSpan="3" Margin="5">
-            <Button x:Name="Button_NewClass" Margin="3
-                        " Width="125" Click="Button_NewClass_Click" Height="28" VerticalAlignment="Center">
+        <StackPanel Orientation="Vertical" Grid.Column="3" Grid.Row="1" Grid.RowSpan="3" Margin="5,6,5,40">
+            <Button x:Name="Button_NewClass" Margin="3" Width="125" Click="Button_NewClass_Click" Height="28" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal" Width="Auto">
                     <iconPacks:PackIconMaterial Kind="FileCode" />
                     <TextBlock Text="New Class" VerticalAlignment="Center" Margin="10,0,0,0" />
                 </StackPanel>
             </Button>
+            
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Margin="5,78,5,6">
+            <TextBox x:Name="TextBlock_Command" Text="Executed commands will be here, you can edit the commands, or re-execute them." VerticalAlignment="Bottom" Margin="5,0,5,5" HorizontalAlignment="Stretch"/>
+            <Button x:Name="Button_Execute" DockPanel.Dock="Right" Margin="4" Content="Execute" VerticalAlignment="Bottom" Height="20" Width="130" Click="Button_Execute_Click"/>
         </StackPanel>
     </Grid>
 </UserControl>
